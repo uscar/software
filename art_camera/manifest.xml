@@ -1,0 +1,17 @@
+<package>
+  <description brief="art_camera">
+
+     art_camera
+
+  </description>
+  <author>art</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/art_camera</url>
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs"/>
+  <depend package="geometry_msgs"/>
+
+</package>
+
+

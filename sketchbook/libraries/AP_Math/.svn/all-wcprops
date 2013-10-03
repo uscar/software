@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/338/trunk/beohawk/software/Arduino/libraries/AP_Math
+END
+AP_Math.h
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/338/trunk/beohawk/software/Arduino/libraries/AP_Math/AP_Math.h
+END
+vector2.h
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/338/trunk/beohawk/software/Arduino/libraries/AP_Math/vector2.h
+END
+vector3.h
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/338/trunk/beohawk/software/Arduino/libraries/AP_Math/vector3.h
+END
+matrix3.h
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/338/trunk/beohawk/software/Arduino/libraries/AP_Math/matrix3.h
+END

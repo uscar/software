@@ -1,0 +1,28 @@
+<package>
+  <description brief="flash_drive_finder">
+
+     flash_drive_finder
+
+  </description>
+  <author>Keith DeRuiter</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/flash_drive_finder</url>
+  <depend package="tf"/>
+  <depend package="std_msgs"/>
+  <depend package="nav_msgs"/>
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs"/>
+  <depend package="opencv2"/>
+  <depend package="cv_bridge"/>
+  <depend package="image_transport"/>
+  <depend package="message_filters"/>
+
+<<<<<<< HEAD
+  
+=======
+>>>>>>> 176870b524a4a23b5aa1b398026f748cd3ca0abb
+
+</package>
+
+

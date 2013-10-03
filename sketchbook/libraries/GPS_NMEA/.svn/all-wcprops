@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/338/trunk/beohawk/software/Arduino/libraries/GPS_NMEA
+END
+GPS_NMEA.h
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/338/trunk/beohawk/software/Arduino/libraries/GPS_NMEA/GPS_NMEA.h
+END
+keywords.txt
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/338/trunk/beohawk/software/Arduino/libraries/GPS_NMEA/keywords.txt
+END
+GPS_NMEA.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/338/trunk/beohawk/software/Arduino/libraries/GPS_NMEA/GPS_NMEA.cpp
+END
