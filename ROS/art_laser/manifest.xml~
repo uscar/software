@@ -1,0 +1,16 @@
+<package><description brief="art_laser">
+
+     art_laser
+
+  </description><author>ART</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/art_laser</url>
+  <depend package="roscpp"/>
+  <depend package="message_filters"/>
+  <depend package="std_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="common_rosdeps"/>
+  <rosdep name="eigen"/>
+</package>

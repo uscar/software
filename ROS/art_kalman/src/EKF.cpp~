@@ -1,0 +1,40 @@
+#include <ros/ros.h>
+#include <message_filters/subscriber.h>
+#include <message_filters/synchronizer.h>
+#include <message_filters/sync_policies/approximate_time.h>
+#include <boost/shared_ptr.hpp>
+#include <geometry_msgs/PointStamped.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Quaternion.h>
+#include <geometry_msgs/Point.h>
+#include <Eigen/Eigen>
+#include <cmath>
+#include <vector>
+#include <iostream>
+
+using namespace std;
+using namespace Eigen;
+
+class EKF
+{
+
+public:
+	ros::NodeHandle nh;
+	//Subscribe to scan matching data (x,y,heading) and laser altitude estimation (z)
+	message_filters::Subscriber<geometry_msgs::PointStamped> sub_xyheading, sub_z;
+	//Subscribe to IMU data from arduino (roll, pitch, x_accel, y_accel, z_accel)
+	message_filters::Subscriber<geometry_msgs::PoseStamped> sub_arduino;
+	typedef message_filters::sync_policies::ApproximateTime<geometry_msgs::PointStamped, geometry_msgs::PoseStamped> Policy_sync_subs;
+    message_filters::Synchronizer<Policy_sync_subs> sync_subs;
+	//Figure out how and to publish
+	//ros::Publisher pub_ekf;
+
+
+	EKF(ros::NodeHandle& _nh): nh(_nh), sub_xyheading(nh, "/odometry", 10), sub_z(nh, "/altitude", 10), sub_arduino(nh, "/arduino/IMU", 10),
+										sync_subs(Policy_sync_subs(10), sub_xyheading, sub_z, sub_arduino) 
+		{
+			//pub_ekf = nh.advertise<sensor_msgs::PointCloud>("/world", 10);
+			sync_subs.registerCallback(boost::bind(&EKF::sync_subs_callback, this, _1, _2, _3));
+		}
+
+};

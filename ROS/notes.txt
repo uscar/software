@@ -1,0 +1,6 @@
+optical flow - kinect package w/ kinect flow
+obstacle avoid ROS/art_laser (avoid obstacle)
+ICP lrf = package under source IMU_odom = odometry that uses IMU
+art_lrf not using as much = laser range finding line finder
+Keith's planner node ROS/planner contains compiled version of all arduino exports
+

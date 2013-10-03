@@ -1,0 +1,19 @@
+<package>
+  <description brief="art_kalman">
+
+     art_kalman
+
+  </description>
+  <author>Keith McKay</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/art_kalman</url>
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="sensor_msgs"/>
+  <depend package="std_msgs"/>
+  <depend package="geometry_msgs"/>
+  <rosdep name="eigen"/>
+</package>
+
+

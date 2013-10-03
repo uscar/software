@@ -1,0 +1,17 @@
+<package>
+  <description brief="test_pkg">
+
+     test_pkg
+
+  </description>
+  <author>art</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/test_pkg</url>
+  <depend package="roscpp"/>
+  <depend package="std_msgs"/> 
+  <depend package="sensor_msgs"/>
+  <depend package="geometry_msgs"/>
+</package>
+
+

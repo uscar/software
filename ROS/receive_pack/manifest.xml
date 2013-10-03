@@ -1,0 +1,16 @@
+<package>
+  <description brief="receive_pack">
+
+     receive_pack
+
+  </description>
+  <author>art</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/receive_pack</url>
+  <depend package="roscpp"/>
+  <depend package="std_msgs"/>
+
+</package>
+
+

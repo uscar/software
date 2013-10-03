@@ -1,0 +1,34 @@
+#include <ros/ros.h>
+#include <geometry_msgs/Point32.h>
+
+using namespace std;
+
+
+int main (int argc, char** argv) 
+{
+	ros::init(argc, argv, "arduino");
+	ros::NodeHandle nh;
+	ros::Publisher pub = nh.advertise<geometry_msgs::Point32>("arduino/pos", 1);
+	geometry_msgs::Point32 pos_msg;
+	float x, y, z;
+	x = 0.0;
+	y = 0.0;
+	z = 0.0;
+
+	ros::Rate loop_rate(10);
+
+	while (ros::ok()) 
+	{
+		pos_msg.x = x;
+		pos_msg.y = y;
+		pos_msg.z = z;
+		x += 0.1;
+		y += 0.2;
+		z += 0.3;
+		pub.publish(pos_msg);
+		ros::spinOnce();
+		loop_rate.sleep();
+	}
+
+	return 0;
+}

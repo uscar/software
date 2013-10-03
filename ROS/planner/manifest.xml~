@@ -1,0 +1,15 @@
+<package>
+  <description brief="planner">
+
+     This package contains nodes for motion planning for the Aerial Robotics quadrotor.
+
+  </description>
+  <author>Keith McKay and Russell Stewart</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/planner</url>
+  <depend package="roscpp"/>
+
+</package>
+
+
