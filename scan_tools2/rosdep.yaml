@@ -1,0 +1,4 @@
+libgsl:
+  ubuntu: libgsl0-dev
+  debian: libgsl0-dev
+
