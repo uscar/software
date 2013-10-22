@@ -5,6 +5,9 @@
 int imu_cache[8];
 int imu_read[8];
 
+int rc_cache[8];
+int rc_read[8];
+
 //this will be called once (and only once) when it starts up
 void setup(){
   APM_ADC.Init();
@@ -29,25 +32,42 @@ void setup(){
 
 //this will be called over and over again
 void loop(){
-  boolean redraw = false;
-
-  for(int i = 0;i<8;i++){
-    imu_read[i] = APM_ADC.Ch(i)-IMU_OFFSETS[i];
-    if(abs(imu_read[i] - imu_cache[i])>=3){
-      imu_cache[i] = imu_read[i];
-      redraw = true; 
-    }
-  }
-
-  if(redraw){
-    for(int i = 0;i<8;i++){
-      Serial.print(imu_read[i]);
-      Serial.print(" ");
-    }
-    Serial.println();
-  }
+  if(read_imu(imu_cache,imu_read))
+    print8(imu_read);
+  if(read_rc(rc_cache,rc_read))
+    print8(rc_read);
   delay(10);
 }
 
+boolean read_imu(int cache[8],int out[8]){
+  boolean ret = false;
+  for(int i = 0;i<8;i++){
+    out[i] = APM_ADC.Ch(i)-IMU_OFFSETS[i];
+    if(abs(out[i] - cache[i])>=3){
+      cache[i] = out[i];
+      ret = true;
+    }
+  }
+  return ret;
+}
 
+boolean read_rc(int cache[8],int out[8]){
+  boolean ret = false;
+  for(int i = 0;i<4;i++){
+    out[i] = APM_RC.InputCh(i);
+    if(abs(out[i]-cache[i])>=2){
+      cache[i] = out[i];
+      ret = true; 
+    }
+  } 
+  return ret;
+}
+
+void print8(int out[8]){
+  for(int i = 0;i<8;i++){
+    Serial.print(out[i]);
+    Serial.print(" ");
+  }
+  Serial.println();
+}
 
