@@ -10,12 +10,11 @@ float getSensitivity(float xInput){
 	float yRange = (yMax - yMin);
 	float yInput = 2 * (yRange / pow(xRange, 3))*pow(x, 3) + .5*yRange*x / xRange;
 	return yInput + (yMax + yMin) / 2;
-	
 }
-void setup(){
-  Serial.begin(57600);
-  Serial.println(getSensitivity(900));
+float getSlopeAt(float xInput){
+	float x = xInput - (xMax + xMin) / 2;
+	float xRange = (xMax - xMin);
+	float yRange = (yMax - yMin);
+	return (6 * yRange / pow(xRange, 3) * pow(x, 2) + .5*yRange / xRange);
 }
-void loop(){
-  
-}
+
