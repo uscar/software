@@ -32,7 +32,7 @@ void loop(){
   boolean redraw = false;
 
   for(int i = 0;i<8;i++){
-    imu_read[i] = APM_ADC.Ch(i);
+    imu_read[i] = APM_ADC.Ch(i)-IMU_OFFSETS[i];
     if(abs(imu_read[i] - imu_cache[i])>=3){
       imu_cache[i] = imu_read[i];
       redraw = true; 
@@ -46,6 +46,7 @@ void loop(){
     }
     Serial.println();
   }
+  delay(10);
 }
 
 

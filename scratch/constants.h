@@ -1,5 +1,7 @@
-#define MOTOR_OFF 0;
-#define MOTOR_MIN 1100;
-#define MOTOR_MAX 2000;
+#define MOTOR_OFF 0
+#define MOTOR_MIN 1100
+#define MOTOR_MAX 2000
 
+
+int IMU_OFFSETS[8] = {1687,1751,1635,1500,2025,2025,2088,0};
 
