@@ -1,6 +1,7 @@
 #include <APM_ADC.h>
 #include <APM_RC.h>
 #include "constants.h"
+#include "functions.c"
 
 int imu_cache[8];
 int imu_read[8];
@@ -26,8 +27,7 @@ void setup(){
   //do it again for good measure.
   for(int i = 0;i<4;i++){
     APM_RC.OutputCh(i,MOTOR_OFF);
-  }  
-
+  }
 }
 
 //this will be called over and over again
@@ -36,6 +36,12 @@ void loop(){
     print8(imu_read);
   if(read_rc(rc_cache,rc_read))
     print8(rc_read);
+
+  int throttle = rc_read[2]-CONTROL_MIN;
+  int out = throttle+MOTOR_MIN;
+  for(int i = 0;i<4;i++){
+    APM_RC.OutputCh(i,out);
+  }
   delay(10);
 }
 
@@ -70,4 +76,5 @@ void print8(int out[8]){
   }
   Serial.println();
 }
+
 
