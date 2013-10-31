@@ -1,10 +1,8 @@
-#ifndef _ROS_geometry_msgs_TransformStamped_h
-#define _ROS_geometry_msgs_TransformStamped_h
+#ifndef ros_TransformStamped_h
+#define ros_TransformStamped_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Transform.h"
 
@@ -15,14 +13,14 @@ namespace geometry_msgs
   {
     public:
       std_msgs::Header header;
-      char * child_frame_id;
+      unsigned char * child_frame_id;
       geometry_msgs::Transform transform;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       offset += this->header.serialize(outbuffer + offset);
-      uint32_t * length_child_frame_id = (uint32_t *)(outbuffer + offset);
+      long * length_child_frame_id = (long *)(outbuffer + offset);
       *length_child_frame_id = strlen( (const char*) this->child_frame_id);
       offset += 4;
       memcpy(outbuffer + offset, this->child_frame_id, *length_child_frame_id);
@@ -35,20 +33,15 @@ namespace geometry_msgs
     {
       int offset = 0;
       offset += this->header.deserialize(inbuffer + offset);
-      uint32_t length_child_frame_id = *(uint32_t *)(inbuffer + offset);
+      long * length_child_frame_id = (long *)(inbuffer + offset);
       offset += 4;
-      for(unsigned int k= offset; k< offset+length_child_frame_id; ++k){
-          inbuffer[k-1]=inbuffer[k];
-      }
-      inbuffer[offset+length_child_frame_id-1]=0;
-      this->child_frame_id = (char *)(inbuffer + offset-1);
-      offset += length_child_frame_id;
+      this->child_frame_id = (inbuffer + offset);
+      offset += *length_child_frame_id;
       offset += this->transform.deserialize(inbuffer + offset);
      return offset;
     }
 
     const char * getType(){ return "geometry_msgs/TransformStamped"; };
-    const char * getMD5(){ return "b5764a33bfeb3588febc2682852579b0"; };
 
   };
 

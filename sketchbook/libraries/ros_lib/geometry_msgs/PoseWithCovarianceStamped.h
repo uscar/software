@@ -1,10 +1,8 @@
-#ifndef _ROS_geometry_msgs_PoseWithCovarianceStamped_h
-#define _ROS_geometry_msgs_PoseWithCovarianceStamped_h
+#ifndef ros_PoseWithCovarianceStamped_h
+#define ros_PoseWithCovarianceStamped_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 #include "std_msgs/Header.h"
 #include "geometry_msgs/PoseWithCovariance.h"
 
@@ -17,7 +15,7 @@ namespace geometry_msgs
       std_msgs::Header header;
       geometry_msgs::PoseWithCovariance pose;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       offset += this->header.serialize(outbuffer + offset);
@@ -34,7 +32,6 @@ namespace geometry_msgs
     }
 
     const char * getType(){ return "geometry_msgs/PoseWithCovarianceStamped"; };
-    const char * getMD5(){ return "953b798c0f514ff060a53a3498ce6246"; };
 
   };
 

@@ -32,27 +32,112 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _ROS_H_
-#define _ROS_H_
+/* 
+ * ROS definitions for Arduino
+ * Author: Michael Ferguson
+ */
 
-#include "ros/node_handle.h"
-#include "ArduinoHardware.h"
+#ifndef ros_lib_h
+#define ros_lib_h
+
+#define MAX_PUBLISHERS      25
+#define MAX_SUBSCRIBERS     25
+
+#define BUFFER_SIZE         512
+
+#define TOPIC_NEGOTIATION   0
+#define TOPIC_PUBLISHERS    0
+#define TOPIC_SUBSCRIBERS   1
+// services?
+#define TOPIC_TIME          10
+
+#define SYNC_SECONDS        5
 
 namespace ros
 {
-#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega168__)
-  /* downsize our buffers */
-  typedef NodeHandle_<ArduinoHardware, 6, 6, 150, 150> NodeHandle;
+  class NodeHandle;
 
-#elif defined(__AVR_ATmega328P__)
+  /* Base Message Type */
+  class Msg
+  {
+    public: 
+      virtual int serialize(unsigned char *outbuffer) = 0;
+	  virtual int deserialize(unsigned char *data) = 0;
+      virtual const char * getType() = 0;
+      
+  };
 
-  typedef NodeHandle_<ArduinoHardware, 25, 25, 280, 280> NodeHandle;
+  typedef void (msgCb) (unsigned char * data);
 
-#else
+  /* Generic Publisher */
+  class Publisher
+  {
+    public:
+      Publisher( const char * topic_name, Msg * msg );
+      int publish( Msg * msg );
 
-  typedef NodeHandle_<ArduinoHardware> NodeHandle;
+      int id_;     
+      NodeHandle * nh_;
+      const char * topic_;
+      Msg * msg_;
+  };
 
-#endif   
+  /* Generic Subscriber */
+  class Subscriber
+  {
+    public:
+      Subscriber( const char * topic_name, Msg * msg, msgCb * callback);
+
+      int id_;     
+      NodeHandle * nh_;
+      const char * topic_;
+      Msg * msg_;
+      msgCb * cb_;
+  };
+
+  /* Node Handle */
+  class NodeHandle
+  {
+    public:
+      bool advertise(Publisher &p);
+      bool subscribe(Subscriber &s);
+      void negotiateTopics();
+      int publish(int id, Msg * msg);
+
+      /* synchronize time with host */
+      void requestSyncTime();
+      void syncTime(unsigned char * data);
+
+      /* Start serial, initialize buffers */
+      void initNode();
+
+      /* This function goes in your loop() function, it handles 
+       *  serial input and callbacks for subscribers. 
+       */
+      void spinOnce();
+
+      bool configured_;
+
+    private:
+      void makeHeader();
+      Publisher * publishers[MAX_PUBLISHERS];
+      Subscriber * subscribers[MAX_SUBSCRIBERS];
+
+      int mode_;
+      int bytes_;
+      int topic_;
+      int index_;
+      int checksum_;
+	
+      unsigned char message_in[BUFFER_SIZE];
+      unsigned char message_out[BUFFER_SIZE];
+  };
+
 }
+
+#define ROS_CALLBACK( fn, ty, message )\
+ty message; \
+void fn (unsigned char *data){\
+    message.deserialize(data); 
 
 #endif

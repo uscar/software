@@ -1,10 +1,8 @@
-#ifndef _ROS_nav_msgs_Odometry_h
-#define _ROS_nav_msgs_Odometry_h
+#ifndef ros_Odometry_h
+#define ros_Odometry_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 #include "std_msgs/Header.h"
 #include "geometry_msgs/PoseWithCovariance.h"
 #include "geometry_msgs/TwistWithCovariance.h"
@@ -16,15 +14,15 @@ namespace nav_msgs
   {
     public:
       std_msgs::Header header;
-      char * child_frame_id;
+      unsigned char * child_frame_id;
       geometry_msgs::PoseWithCovariance pose;
       geometry_msgs::TwistWithCovariance twist;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       offset += this->header.serialize(outbuffer + offset);
-      uint32_t * length_child_frame_id = (uint32_t *)(outbuffer + offset);
+      long * length_child_frame_id = (long *)(outbuffer + offset);
       *length_child_frame_id = strlen( (const char*) this->child_frame_id);
       offset += 4;
       memcpy(outbuffer + offset, this->child_frame_id, *length_child_frame_id);
@@ -38,21 +36,16 @@ namespace nav_msgs
     {
       int offset = 0;
       offset += this->header.deserialize(inbuffer + offset);
-      uint32_t length_child_frame_id = *(uint32_t *)(inbuffer + offset);
+      long * length_child_frame_id = (long *)(inbuffer + offset);
       offset += 4;
-      for(unsigned int k= offset; k< offset+length_child_frame_id; ++k){
-          inbuffer[k-1]=inbuffer[k];
-      }
-      inbuffer[offset+length_child_frame_id-1]=0;
-      this->child_frame_id = (char *)(inbuffer + offset-1);
-      offset += length_child_frame_id;
+      this->child_frame_id = (inbuffer + offset);
+      offset += *length_child_frame_id;
       offset += this->pose.deserialize(inbuffer + offset);
       offset += this->twist.deserialize(inbuffer + offset);
      return offset;
     }
 
     const char * getType(){ return "nav_msgs/Odometry"; };
-    const char * getMD5(){ return "cd5e73d190d741a2f92e81eda573aca7"; };
 
   };
 

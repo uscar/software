@@ -16,7 +16,7 @@
  *          18-12-2003
  *          06-06-2004
  *
- * ï¿½ 2003, This code is provided "as is" and you can use it freely as long as
+ * © 2003, This code is provided "as is" and you can use it freely as long as
  * credit is given to Bill Perone in the application it is used in
  ****************************************/
 
@@ -148,10 +148,10 @@ struct Vector2
 
 };
 
-typedef Vector2<int>	Vector2i;
+typedef Vector2<int>			Vector2i;
 typedef Vector2<unsigned int>	Vector2ui;
-typedef Vector2<int>	Vector2l;
-typedef Vector2<unsigned int>	Vector2ul;
-typedef Vector2<float>		Vector2f;
+typedef Vector2<long>			Vector2l;
+typedef Vector2<unsigned long>	Vector2ul;
+typedef Vector2<float>			Vector2f;
 
 #endif // VECTOR2_H

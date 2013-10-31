@@ -123,11 +123,6 @@ public:
 	}
 	Matrix3<T> transpose(void)
 	{	return *this = transposed();	}
-	
-	// only define for float
-	void rotation(enum Rotation);
-	void from_euler(float roll, float pitch, float yaw);
-	void to_euler(float *roll, float *pitch, float *yaw);
 
 };
 

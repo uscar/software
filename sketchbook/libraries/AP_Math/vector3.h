@@ -17,7 +17,7 @@
  *          18-12-2003
  *          06-06-2004
  *
- * ï¿½ 2003, This code is provided "as is" and you can use it freely as long as
+ * © 2003, This code is provided "as is" and you can use it freely as long as
  * credit is given to Bill Perone in the application it is used in
  *
  * Notes:
@@ -43,7 +43,6 @@
 
 #include <math.h>
 #include <string.h>
-#include "rotations.h"
 
 template <typename T>
 class Vector3
@@ -52,7 +51,7 @@ public:
 	T x, y, z;
 
 	// trivial ctor
-	Vector3<T>() { x = y = z = 0; }
+	Vector3<T>() { x = y = x = 0; }
 
 	// setting ctor
 	Vector3<T>(const T x0, const T y0, const T z0): x(x0), y(y0), z(z0) {}
@@ -146,10 +145,6 @@ public:
 	void normalize()
 	{	*this/=length();	}
 
-	// zero the vector
-	void zero()
-	{	x = y = z = 0.0; }
-
 	// returns the normalized version of this vector
 	Vector3<T> normalized() const
 	{   return  *this/length();  }
@@ -178,23 +173,12 @@ public:
 	T angle_normalized(const Vector3<T> &v1, const Vector3<T> &v2)
 	{   return (T)acosf(v1*v2);  }
 
-	// check if any elements are NAN
-	bool is_nan(void)
-		{   return isnan(x) || isnan(y) || isnan(z); }
-
-	// check if any elements are infinity
-	bool is_inf(void)
-		{   return isinf(x) || isinf(y) || isinf(z); }
-
-	// rotate by a standard rotation
-	void rotate(Rotation rotation);
-
 };
 
-typedef Vector3<int>		Vector3i;
-typedef Vector3<unsigned int>		Vector3ui;
-typedef Vector3<int>		Vector3l;
-typedef Vector3<unsigned int>		Vector3ul;
+typedef Vector3<int>			Vector3i;
+typedef Vector3<unsigned int>	Vector3ui;
+typedef Vector3<long>			Vector3l;
+typedef Vector3<unsigned long>	Vector3ul;
 typedef Vector3<float>			Vector3f;
 
 #endif // VECTOR3_H

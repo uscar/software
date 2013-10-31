@@ -30,10 +30,11 @@
 extern "C" {
   // AVR LibC Includes
   #include <math.h>
-  #include "WConstants.h"
+//  #include "WConstants.h"
+
 }
 
-#include <Wire.h>
+#include "../Wire/Wire.h"
 #include "APM_Compass.h"
 
 #define CompassAddress 0x1E
@@ -48,8 +49,8 @@ void APM_Compass_Class::Init(void)
 {
   Wire.begin();  
   Wire.beginTransmission(CompassAddress);
-  Wire.send(0x02); 
-  Wire.send(0x00);        // Set continouos mode (default to 10Hz)
+  Wire.write((uint8_t)0x02);
+  Wire.write((uint8_t)0x00);        // Set continouos mode (default to 10Hz)
   Wire.endTransmission(); //end transmission
 }
 
@@ -60,14 +61,14 @@ void APM_Compass_Class::Read()
   byte buff[6];
  
   Wire.beginTransmission(CompassAddress); 
-  Wire.send(0x03);        //sends address to read from
+  Wire.write(0x03);        //sends address to read from
   Wire.endTransmission(); //end transmission
   
   //Wire.beginTransmission(CompassAddress); 
   Wire.requestFrom(CompassAddress, 6);    // request 6 bytes from device
   while(Wire.available())     
   { 
-    buff[i] = Wire.receive();  // receive one byte
+    buff[i] = Wire.read();  // receive one byte
     i++;
   }
   Wire.endTransmission(); //end transmission

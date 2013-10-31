@@ -1,10 +1,8 @@
-#ifndef _ROS_geometry_msgs_Vector3Stamped_h
-#define _ROS_geometry_msgs_Vector3Stamped_h
+#ifndef ros_Vector3Stamped_h
+#define ros_Vector3Stamped_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 #include "std_msgs/Header.h"
 #include "geometry_msgs/Vector3.h"
 
@@ -17,7 +15,7 @@ namespace geometry_msgs
       std_msgs::Header header;
       geometry_msgs::Vector3 vector;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       offset += this->header.serialize(outbuffer + offset);
@@ -34,7 +32,6 @@ namespace geometry_msgs
     }
 
     const char * getType(){ return "geometry_msgs/Vector3Stamped"; };
-    const char * getMD5(){ return "7b324c7325e683bf02a9b14b01090ec7"; };
 
   };
 

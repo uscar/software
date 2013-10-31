@@ -1,10 +1,8 @@
-#ifndef _ROS_std_msgs_Empty_h
-#define _ROS_std_msgs_Empty_h
+#ifndef ros_Empty_h
+#define ros_Empty_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 
 namespace std_msgs
 {
@@ -13,7 +11,7 @@ namespace std_msgs
   {
     public:
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       return offset;
@@ -26,7 +24,6 @@ namespace std_msgs
     }
 
     const char * getType(){ return "std_msgs/Empty"; };
-    const char * getMD5(){ return "d41d8cd98f00b204e9800998ecf8427e"; };
 
   };
 

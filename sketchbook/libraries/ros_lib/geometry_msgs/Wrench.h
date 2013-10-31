@@ -1,10 +1,8 @@
-#ifndef _ROS_geometry_msgs_Wrench_h
-#define _ROS_geometry_msgs_Wrench_h
+#ifndef ros_Wrench_h
+#define ros_Wrench_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 #include "geometry_msgs/Vector3.h"
 
 namespace geometry_msgs
@@ -16,7 +14,7 @@ namespace geometry_msgs
       geometry_msgs::Vector3 force;
       geometry_msgs::Vector3 torque;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       offset += this->force.serialize(outbuffer + offset);
@@ -33,7 +31,6 @@ namespace geometry_msgs
     }
 
     const char * getType(){ return "geometry_msgs/Wrench"; };
-    const char * getMD5(){ return "4f539cf138b23283b520fd271b567936"; };
 
   };
 

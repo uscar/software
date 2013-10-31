@@ -1,10 +1,8 @@
-#ifndef _ROS_geometry_msgs_Transform_h
-#define _ROS_geometry_msgs_Transform_h
+#ifndef ros_Transform_h
+#define ros_Transform_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 #include "geometry_msgs/Vector3.h"
 #include "geometry_msgs/Quaternion.h"
 
@@ -17,7 +15,7 @@ namespace geometry_msgs
       geometry_msgs::Vector3 translation;
       geometry_msgs::Quaternion rotation;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       offset += this->translation.serialize(outbuffer + offset);
@@ -34,7 +32,6 @@ namespace geometry_msgs
     }
 
     const char * getType(){ return "geometry_msgs/Transform"; };
-    const char * getMD5(){ return "ac9eff44abf714214112b05d54a3cf9b"; };
 
   };
 

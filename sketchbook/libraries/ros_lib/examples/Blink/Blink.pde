@@ -6,13 +6,13 @@
 #include <ros.h>
 #include <std_msgs/Empty.h>
 
-ros::NodeHandle  nh;
+ros::NodeHandle nh;
 
-void messageCb( const std_msgs::Empty& toggle_msg){
+ROS_CALLBACK(messageCb, std_msgs::Empty, toggle_msg)
   digitalWrite(13, HIGH-digitalRead(13));   // blink the led
 }
 
-ros::Subscriber<std_msgs::Empty> sub("toggle_led", &messageCb );
+ros::Subscriber sub("toggle_led", &toggle_msg, messageCb );
 
 void setup()
 { 

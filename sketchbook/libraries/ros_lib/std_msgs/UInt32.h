@@ -1,10 +1,8 @@
-#ifndef _ROS_std_msgs_UInt32_h
-#define _ROS_std_msgs_UInt32_h
+#ifndef ros_UInt32_h
+#define ros_UInt32_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 
 namespace std_msgs
 {
@@ -12,15 +10,20 @@ namespace std_msgs
   class UInt32 : public ros::Msg
   {
     public:
-      uint32_t data;
+      unsigned long data;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
-      *(outbuffer + offset + 0) = (this->data >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (this->data >> (8 * 1)) & 0xFF;
-      *(outbuffer + offset + 2) = (this->data >> (8 * 2)) & 0xFF;
-      *(outbuffer + offset + 3) = (this->data >> (8 * 3)) & 0xFF;
+      union {
+        unsigned long real;
+        unsigned long base;
+      } u_data;
+      u_data.real = this->data;
+      *(outbuffer + offset + 0) = (u_data.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_data.base >> (8 * 1)) & 0xFF;
+      *(outbuffer + offset + 2) = (u_data.base >> (8 * 2)) & 0xFF;
+      *(outbuffer + offset + 3) = (u_data.base >> (8 * 3)) & 0xFF;
       offset += sizeof(this->data);
       return offset;
     }
@@ -28,16 +31,21 @@ namespace std_msgs
     virtual int deserialize(unsigned char *inbuffer)
     {
       int offset = 0;
-      this->data |= ((uint32_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      this->data |= ((uint32_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      this->data |= ((uint32_t) (*(inbuffer + offset + 2))) << (8 * 2);
-      this->data |= ((uint32_t) (*(inbuffer + offset + 3))) << (8 * 3);
+      union {
+        unsigned long real;
+        unsigned long base;
+      } u_data;
+      u_data.base = 0;
+      u_data.base |= ((typeof(u_data.base)) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_data.base |= ((typeof(u_data.base)) (*(inbuffer + offset + 1))) << (8 * 1);
+      u_data.base |= ((typeof(u_data.base)) (*(inbuffer + offset + 2))) << (8 * 2);
+      u_data.base |= ((typeof(u_data.base)) (*(inbuffer + offset + 3))) << (8 * 3);
+      this->data = u_data.real;
       offset += sizeof(this->data);
      return offset;
     }
 
     const char * getType(){ return "std_msgs/UInt32"; };
-    const char * getMD5(){ return "304a39449588c7f8ce2df6e8001c5fce"; };
 
   };
 

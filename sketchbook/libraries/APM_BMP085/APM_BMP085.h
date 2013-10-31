@@ -1,6 +1,7 @@
 #ifndef APM_BMP085_h
 #define APM_BMP085_h
-
+#include <Arduino.h>
+#include <Wire.h>
 
 class APM_BMP085_Class
 {

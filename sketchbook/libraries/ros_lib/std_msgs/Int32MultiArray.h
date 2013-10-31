@@ -1,10 +1,8 @@
-#ifndef _ROS_std_msgs_Int32MultiArray_h
-#define _ROS_std_msgs_Int32MultiArray_h
+#ifndef ros_Int32MultiArray_h
+#define ros_Int32MultiArray_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 #include "std_msgs/MultiArrayLayout.h"
 
 namespace std_msgs
@@ -14,11 +12,11 @@ namespace std_msgs
   {
     public:
       std_msgs::MultiArrayLayout layout;
-      uint8_t data_length;
-      int32_t st_data;
-      int32_t * data;
+      unsigned char data_length;
+      long st_data;
+      long * data;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       offset += this->layout.serialize(outbuffer + offset);
@@ -26,10 +24,10 @@ namespace std_msgs
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
-      for( uint8_t i = 0; i < data_length; i++){
+      for( unsigned char i = 0; i < data_length; i++){
       union {
-        int32_t real;
-        uint32_t base;
+        long real;
+        unsigned long base;
       } u_datai;
       u_datai.real = this->data[i];
       *(outbuffer + offset + 0) = (u_datai.base >> (8 * 0)) & 0xFF;
@@ -45,30 +43,29 @@ namespace std_msgs
     {
       int offset = 0;
       offset += this->layout.deserialize(inbuffer + offset);
-      uint8_t data_lengthT = *(inbuffer + offset++);
+      unsigned char data_lengthT = *(inbuffer + offset++);
       if(data_lengthT > data_length)
-        this->data = (int32_t*)realloc(this->data, data_lengthT * sizeof(int32_t));
+        this->data = (long*)realloc(this->data, data_lengthT * sizeof(long));
       offset += 3;
       data_length = data_lengthT;
-      for( uint8_t i = 0; i < data_length; i++){
+      for( unsigned char i = 0; i < data_length; i++){
       union {
-        int32_t real;
-        uint32_t base;
+        long real;
+        unsigned long base;
       } u_st_data;
       u_st_data.base = 0;
-      u_st_data.base |= ((uint32_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      u_st_data.base |= ((uint32_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      u_st_data.base |= ((uint32_t) (*(inbuffer + offset + 2))) << (8 * 2);
-      u_st_data.base |= ((uint32_t) (*(inbuffer + offset + 3))) << (8 * 3);
+      u_st_data.base |= ((typeof(u_st_data.base)) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_st_data.base |= ((typeof(u_st_data.base)) (*(inbuffer + offset + 1))) << (8 * 1);
+      u_st_data.base |= ((typeof(u_st_data.base)) (*(inbuffer + offset + 2))) << (8 * 2);
+      u_st_data.base |= ((typeof(u_st_data.base)) (*(inbuffer + offset + 3))) << (8 * 3);
       this->st_data = u_st_data.real;
       offset += sizeof(this->st_data);
-        memcpy( &(this->data[i]), &(this->st_data), sizeof(int32_t));
+        memcpy( &(this->data[i]), &(this->st_data), sizeof(long));
       }
      return offset;
     }
 
     const char * getType(){ return "std_msgs/Int32MultiArray"; };
-    const char * getMD5(){ return "1d99f79f8b325b44fee908053e9c945b"; };
 
   };
 

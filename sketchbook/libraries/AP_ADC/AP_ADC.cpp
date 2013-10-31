@@ -2,9 +2,11 @@ extern "C" {
   // AVR LibC Includes
   #include <inttypes.h>
   #include <avr/interrupt.h>
-  #include "WConstants.h"
+  
+//  #include "WConstants.h"
 }
 
+#include "Arduino.h"
 #include "AP_ADC.h"
 
 // Commands for reading ADC channels on ADS7844

@@ -1,10 +1,8 @@
-#ifndef _ROS_geometry_msgs_Twist_h
-#define _ROS_geometry_msgs_Twist_h
+#ifndef ros_Twist_h
+#define ros_Twist_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 #include "geometry_msgs/Vector3.h"
 
 namespace geometry_msgs
@@ -16,7 +14,7 @@ namespace geometry_msgs
       geometry_msgs::Vector3 linear;
       geometry_msgs::Vector3 angular;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       offset += this->linear.serialize(outbuffer + offset);
@@ -33,7 +31,6 @@ namespace geometry_msgs
     }
 
     const char * getType(){ return "geometry_msgs/Twist"; };
-    const char * getMD5(){ return "9f195f881246fdfa2798d1d3eebca84a"; };
 
   };
 

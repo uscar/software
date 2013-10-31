@@ -1,10 +1,8 @@
-#ifndef _ROS_std_msgs_Time_h
-#define _ROS_std_msgs_Time_h
+#ifndef ros_Time_h
+#define ros_Time_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 #include "ros/time.h"
 
 namespace std_msgs
@@ -15,18 +13,28 @@ namespace std_msgs
     public:
       ros::Time data;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
-      *(outbuffer + offset + 0) = (this->data.sec >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (this->data.sec >> (8 * 1)) & 0xFF;
-      *(outbuffer + offset + 2) = (this->data.sec >> (8 * 2)) & 0xFF;
-      *(outbuffer + offset + 3) = (this->data.sec >> (8 * 3)) & 0xFF;
+      union {
+        unsigned long real;
+        unsigned long base;
+      } u_sec;
+      u_sec.real = this->data.sec;
+      *(outbuffer + offset + 0) = (u_sec.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_sec.base >> (8 * 1)) & 0xFF;
+      *(outbuffer + offset + 2) = (u_sec.base >> (8 * 2)) & 0xFF;
+      *(outbuffer + offset + 3) = (u_sec.base >> (8 * 3)) & 0xFF;
       offset += sizeof(this->data.sec);
-      *(outbuffer + offset + 0) = (this->data.nsec >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (this->data.nsec >> (8 * 1)) & 0xFF;
-      *(outbuffer + offset + 2) = (this->data.nsec >> (8 * 2)) & 0xFF;
-      *(outbuffer + offset + 3) = (this->data.nsec >> (8 * 3)) & 0xFF;
+      union {
+        unsigned long real;
+        unsigned long base;
+      } u_nsec;
+      u_nsec.real = this->data.nsec;
+      *(outbuffer + offset + 0) = (u_nsec.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_nsec.base >> (8 * 1)) & 0xFF;
+      *(outbuffer + offset + 2) = (u_nsec.base >> (8 * 2)) & 0xFF;
+      *(outbuffer + offset + 3) = (u_nsec.base >> (8 * 3)) & 0xFF;
       offset += sizeof(this->data.nsec);
       return offset;
     }
@@ -34,21 +42,32 @@ namespace std_msgs
     virtual int deserialize(unsigned char *inbuffer)
     {
       int offset = 0;
-      this->data.sec |= ((uint32_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      this->data.sec |= ((uint32_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      this->data.sec |= ((uint32_t) (*(inbuffer + offset + 2))) << (8 * 2);
-      this->data.sec |= ((uint32_t) (*(inbuffer + offset + 3))) << (8 * 3);
+      union {
+        unsigned long real;
+        unsigned long base;
+      } u_sec;
+      u_sec.base = 0;
+      u_sec.base |= ((typeof(u_sec.base)) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_sec.base |= ((typeof(u_sec.base)) (*(inbuffer + offset + 1))) << (8 * 1);
+      u_sec.base |= ((typeof(u_sec.base)) (*(inbuffer + offset + 2))) << (8 * 2);
+      u_sec.base |= ((typeof(u_sec.base)) (*(inbuffer + offset + 3))) << (8 * 3);
+      this->data.sec = u_sec.real;
       offset += sizeof(this->data.sec);
-      this->data.nsec |= ((uint32_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      this->data.nsec |= ((uint32_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      this->data.nsec |= ((uint32_t) (*(inbuffer + offset + 2))) << (8 * 2);
-      this->data.nsec |= ((uint32_t) (*(inbuffer + offset + 3))) << (8 * 3);
+      union {
+        unsigned long real;
+        unsigned long base;
+      } u_nsec;
+      u_nsec.base = 0;
+      u_nsec.base |= ((typeof(u_nsec.base)) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_nsec.base |= ((typeof(u_nsec.base)) (*(inbuffer + offset + 1))) << (8 * 1);
+      u_nsec.base |= ((typeof(u_nsec.base)) (*(inbuffer + offset + 2))) << (8 * 2);
+      u_nsec.base |= ((typeof(u_nsec.base)) (*(inbuffer + offset + 3))) << (8 * 3);
+      this->data.nsec = u_nsec.real;
       offset += sizeof(this->data.nsec);
      return offset;
     }
 
     const char * getType(){ return "std_msgs/Time"; };
-    const char * getMD5(){ return "cd7166c74c552c311fbcc2fe5a7bc289"; };
 
   };
 

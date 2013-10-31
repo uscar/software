@@ -21,7 +21,7 @@
 #include "APM_RC.h"
 
 #include <avr/interrupt.h>
-#include "WProgram.h"
+#include "Arduino.h"
 
 // Variable definition for Input Capture interrupt
 volatile unsigned int ICR4_old;

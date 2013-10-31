@@ -1,10 +1,8 @@
-#ifndef _ROS_sensor_msgs_JointState_h
-#define _ROS_sensor_msgs_JointState_h
+#ifndef ros_JointState_h
+#define ros_JointState_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 #include "std_msgs/Header.h"
 
 namespace sensor_msgs
@@ -14,20 +12,20 @@ namespace sensor_msgs
   {
     public:
       std_msgs::Header header;
-      uint8_t name_length;
-      char* st_name;
-      char* * name;
-      uint8_t position_length;
+      unsigned char name_length;
+      unsigned char* st_name;
+      unsigned char* * name;
+      unsigned char position_length;
       float st_position;
       float * position;
-      uint8_t velocity_length;
+      unsigned char velocity_length;
       float st_velocity;
       float * velocity;
-      uint8_t effort_length;
+      unsigned char effort_length;
       float st_effort;
       float * effort;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       offset += this->header.serialize(outbuffer + offset);
@@ -35,8 +33,8 @@ namespace sensor_msgs
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
-      for( uint8_t i = 0; i < name_length; i++){
-      uint32_t * length_namei = (uint32_t *)(outbuffer + offset);
+      for( unsigned char i = 0; i < name_length; i++){
+      long * length_namei = (long *)(outbuffer + offset);
       *length_namei = strlen( (const char*) this->name[i]);
       offset += 4;
       memcpy(outbuffer + offset, this->name[i], *length_namei);
@@ -46,12 +44,12 @@ namespace sensor_msgs
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
-      for( uint8_t i = 0; i < position_length; i++){
-      int32_t * val_positioni = (long *) &(this->position[i]);
-      int32_t exp_positioni = (((*val_positioni)>>23)&255);
+      for( unsigned char i = 0; i < position_length; i++){
+      long * val_positioni = (long *) &(this->position[i]);
+      long exp_positioni = (((*val_positioni)>>23)&255);
       if(exp_positioni != 0)
         exp_positioni += 1023-127;
-      int32_t sig_positioni = *val_positioni;
+      long sig_positioni = *val_positioni;
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
@@ -66,12 +64,12 @@ namespace sensor_msgs
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
-      for( uint8_t i = 0; i < velocity_length; i++){
-      int32_t * val_velocityi = (long *) &(this->velocity[i]);
-      int32_t exp_velocityi = (((*val_velocityi)>>23)&255);
+      for( unsigned char i = 0; i < velocity_length; i++){
+      long * val_velocityi = (long *) &(this->velocity[i]);
+      long exp_velocityi = (((*val_velocityi)>>23)&255);
       if(exp_velocityi != 0)
         exp_velocityi += 1023-127;
-      int32_t sig_velocityi = *val_velocityi;
+      long sig_velocityi = *val_velocityi;
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
@@ -86,12 +84,12 @@ namespace sensor_msgs
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
-      for( uint8_t i = 0; i < effort_length; i++){
-      int32_t * val_efforti = (long *) &(this->effort[i]);
-      int32_t exp_efforti = (((*val_efforti)>>23)&255);
+      for( unsigned char i = 0; i < effort_length; i++){
+      long * val_efforti = (long *) &(this->effort[i]);
+      long exp_efforti = (((*val_efforti)>>23)&255);
       if(exp_efforti != 0)
         exp_efforti += 1023-127;
-      int32_t sig_efforti = *val_efforti;
+      long sig_efforti = *val_efforti;
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
@@ -109,74 +107,70 @@ namespace sensor_msgs
     {
       int offset = 0;
       offset += this->header.deserialize(inbuffer + offset);
-      uint8_t name_lengthT = *(inbuffer + offset++);
+      unsigned char name_lengthT = *(inbuffer + offset++);
       if(name_lengthT > name_length)
-        this->name = (char**)realloc(this->name, name_lengthT * sizeof(char*));
+        this->name = (unsigned char**)realloc(this->name, name_lengthT * sizeof(unsigned char*));
       offset += 3;
       name_length = name_lengthT;
-      for( uint8_t i = 0; i < name_length; i++){
-      uint32_t length_st_name = *(uint32_t *)(inbuffer + offset);
+      for( unsigned char i = 0; i < name_length; i++){
+      long * length_st_name = (long *)(inbuffer + offset);
       offset += 4;
-      for(unsigned int k= offset; k< offset+length_st_name; ++k){
-          inbuffer[k-1]=inbuffer[k];
+      this->st_name = (inbuffer + offset);
+      offset += *length_st_name;
+        memcpy( &(this->name[i]), &(this->st_name), sizeof(unsigned char*));
       }
-      inbuffer[offset+length_st_name-1]=0;
-      this->st_name = (char *)(inbuffer + offset-1);
-      offset += length_st_name;
-        memcpy( &(this->name[i]), &(this->st_name), sizeof(char*));
-      }
-      uint8_t position_lengthT = *(inbuffer + offset++);
+      unsigned char position_lengthT = *(inbuffer + offset++);
       if(position_lengthT > position_length)
         this->position = (float*)realloc(this->position, position_lengthT * sizeof(float));
       offset += 3;
       position_length = position_lengthT;
-      for( uint8_t i = 0; i < position_length; i++){
-      uint32_t * val_st_position = (uint32_t*) &(this->st_position);
+      for( unsigned char i = 0; i < position_length; i++){
+      unsigned long * val_st_position = (unsigned long*) &(this->st_position);
       offset += 3;
-      *val_st_position = ((uint32_t)(*(inbuffer + offset++))>>5 & 0x07);
-      *val_st_position |= ((uint32_t)(*(inbuffer + offset++)) & 0xff)<<3;
-      *val_st_position |= ((uint32_t)(*(inbuffer + offset++)) & 0xff)<<11;
-      *val_st_position |= ((uint32_t)(*(inbuffer + offset)) & 0x0f)<<19;
-      uint32_t exp_st_position = ((uint32_t)(*(inbuffer + offset++))&0xf0)>>4;
-      exp_st_position |= ((uint32_t)(*(inbuffer + offset)) & 0x7f)<<4;
+      *val_st_position = ((unsigned long)(*(inbuffer + offset++))>>5 & 0x07);
+      *val_st_position |= ((unsigned long)(*(inbuffer + offset++)) & 0xff)<<3;
+      *val_st_position |= ((unsigned long)(*(inbuffer + offset++)) & 0xff)<<11;
+      *val_st_position |= ((unsigned long)(*(inbuffer + offset)) & 0x0f)<<19;
+      unsigned long exp_st_position = ((unsigned long)(*(inbuffer + offset++))&0xf0)>>4;
+      exp_st_position |= ((unsigned long)(*(inbuffer + offset)) & 0x7f)<<4;
       if(exp_st_position !=0)
         *val_st_position |= ((exp_st_position)-1023+127)<<23;
       if( ((*(inbuffer+offset++)) & 0x80) > 0) this->st_position = -this->st_position;
         memcpy( &(this->position[i]), &(this->st_position), sizeof(float));
       }
-      uint8_t velocity_lengthT = *(inbuffer + offset++);
+      unsigned char velocity_lengthT = *(inbuffer + offset++);
       if(velocity_lengthT > velocity_length)
         this->velocity = (float*)realloc(this->velocity, velocity_lengthT * sizeof(float));
       offset += 3;
       velocity_length = velocity_lengthT;
-      for( uint8_t i = 0; i < velocity_length; i++){
-      uint32_t * val_st_velocity = (uint32_t*) &(this->st_velocity);
+      for( unsigned char i = 0; i < velocity_length; i++){
+      unsigned long * val_st_velocity = (unsigned long*) &(this->st_velocity);
       offset += 3;
-      *val_st_velocity = ((uint32_t)(*(inbuffer + offset++))>>5 & 0x07);
-      *val_st_velocity |= ((uint32_t)(*(inbuffer + offset++)) & 0xff)<<3;
-      *val_st_velocity |= ((uint32_t)(*(inbuffer + offset++)) & 0xff)<<11;
-      *val_st_velocity |= ((uint32_t)(*(inbuffer + offset)) & 0x0f)<<19;
-      uint32_t exp_st_velocity = ((uint32_t)(*(inbuffer + offset++))&0xf0)>>4;
-      exp_st_velocity |= ((uint32_t)(*(inbuffer + offset)) & 0x7f)<<4;
+      *val_st_velocity = ((unsigned long)(*(inbuffer + offset++))>>5 & 0x07);
+      *val_st_velocity |= ((unsigned long)(*(inbuffer + offset++)) & 0xff)<<3;
+      *val_st_velocity |= ((unsigned long)(*(inbuffer + offset++)) & 0xff)<<11;
+      *val_st_velocity |= ((unsigned long)(*(inbuffer + offset)) & 0x0f)<<19;
+      unsigned long exp_st_velocity = ((unsigned long)(*(inbuffer + offset++))&0xf0)>>4;
+      exp_st_velocity |= ((unsigned long)(*(inbuffer + offset)) & 0x7f)<<4;
       if(exp_st_velocity !=0)
         *val_st_velocity |= ((exp_st_velocity)-1023+127)<<23;
       if( ((*(inbuffer+offset++)) & 0x80) > 0) this->st_velocity = -this->st_velocity;
         memcpy( &(this->velocity[i]), &(this->st_velocity), sizeof(float));
       }
-      uint8_t effort_lengthT = *(inbuffer + offset++);
+      unsigned char effort_lengthT = *(inbuffer + offset++);
       if(effort_lengthT > effort_length)
         this->effort = (float*)realloc(this->effort, effort_lengthT * sizeof(float));
       offset += 3;
       effort_length = effort_lengthT;
-      for( uint8_t i = 0; i < effort_length; i++){
-      uint32_t * val_st_effort = (uint32_t*) &(this->st_effort);
+      for( unsigned char i = 0; i < effort_length; i++){
+      unsigned long * val_st_effort = (unsigned long*) &(this->st_effort);
       offset += 3;
-      *val_st_effort = ((uint32_t)(*(inbuffer + offset++))>>5 & 0x07);
-      *val_st_effort |= ((uint32_t)(*(inbuffer + offset++)) & 0xff)<<3;
-      *val_st_effort |= ((uint32_t)(*(inbuffer + offset++)) & 0xff)<<11;
-      *val_st_effort |= ((uint32_t)(*(inbuffer + offset)) & 0x0f)<<19;
-      uint32_t exp_st_effort = ((uint32_t)(*(inbuffer + offset++))&0xf0)>>4;
-      exp_st_effort |= ((uint32_t)(*(inbuffer + offset)) & 0x7f)<<4;
+      *val_st_effort = ((unsigned long)(*(inbuffer + offset++))>>5 & 0x07);
+      *val_st_effort |= ((unsigned long)(*(inbuffer + offset++)) & 0xff)<<3;
+      *val_st_effort |= ((unsigned long)(*(inbuffer + offset++)) & 0xff)<<11;
+      *val_st_effort |= ((unsigned long)(*(inbuffer + offset)) & 0x0f)<<19;
+      unsigned long exp_st_effort = ((unsigned long)(*(inbuffer + offset++))&0xf0)>>4;
+      exp_st_effort |= ((unsigned long)(*(inbuffer + offset)) & 0x7f)<<4;
       if(exp_st_effort !=0)
         *val_st_effort |= ((exp_st_effort)-1023+127)<<23;
       if( ((*(inbuffer+offset++)) & 0x80) > 0) this->st_effort = -this->st_effort;
@@ -186,7 +180,6 @@ namespace sensor_msgs
     }
 
     const char * getType(){ return "sensor_msgs/JointState"; };
-    const char * getMD5(){ return "3066dcd76a6cfaef579bd0f34173e9fd"; };
 
   };
 

@@ -1,10 +1,8 @@
-#ifndef _ROS_geometry_msgs_TwistWithCovarianceStamped_h
-#define _ROS_geometry_msgs_TwistWithCovarianceStamped_h
+#ifndef ros_TwistWithCovarianceStamped_h
+#define ros_TwistWithCovarianceStamped_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 #include "std_msgs/Header.h"
 #include "geometry_msgs/TwistWithCovariance.h"
 
@@ -17,7 +15,7 @@ namespace geometry_msgs
       std_msgs::Header header;
       geometry_msgs::TwistWithCovariance twist;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       offset += this->header.serialize(outbuffer + offset);
@@ -34,7 +32,6 @@ namespace geometry_msgs
     }
 
     const char * getType(){ return "geometry_msgs/TwistWithCovarianceStamped"; };
-    const char * getMD5(){ return "8927a1a12fb2607ceea095b2dc440a96"; };
 
   };
 

@@ -1,10 +1,8 @@
-#ifndef _ROS_geometry_msgs_Pose_h
-#define _ROS_geometry_msgs_Pose_h
+#ifndef ros_Pose_h
+#define ros_Pose_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 #include "geometry_msgs/Point.h"
 #include "geometry_msgs/Quaternion.h"
 
@@ -17,7 +15,7 @@ namespace geometry_msgs
       geometry_msgs::Point position;
       geometry_msgs::Quaternion orientation;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       offset += this->position.serialize(outbuffer + offset);
@@ -34,7 +32,6 @@ namespace geometry_msgs
     }
 
     const char * getType(){ return "geometry_msgs/Pose"; };
-    const char * getMD5(){ return "e45d45a5a1ce597b249e23fb30fc871f"; };
 
   };
 

@@ -1,10 +1,8 @@
-#ifndef _ROS_sensor_msgs_Image_h
-#define _ROS_sensor_msgs_Image_h
+#ifndef ros_Image_h
+#define ros_Image_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 #include "std_msgs/Header.h"
 
 namespace sensor_msgs
@@ -14,47 +12,72 @@ namespace sensor_msgs
   {
     public:
       std_msgs::Header header;
-      uint32_t height;
-      uint32_t width;
-      char * encoding;
-      uint8_t is_bigendian;
-      uint32_t step;
-      uint8_t data_length;
-      uint8_t st_data;
-      uint8_t * data;
+      unsigned long height;
+      unsigned long width;
+      unsigned char * encoding;
+      unsigned char is_bigendian;
+      unsigned long step;
+      unsigned char data_length;
+      unsigned char st_data;
+      unsigned char * data;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       offset += this->header.serialize(outbuffer + offset);
-      *(outbuffer + offset + 0) = (this->height >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (this->height >> (8 * 1)) & 0xFF;
-      *(outbuffer + offset + 2) = (this->height >> (8 * 2)) & 0xFF;
-      *(outbuffer + offset + 3) = (this->height >> (8 * 3)) & 0xFF;
+      union {
+        unsigned long real;
+        unsigned long base;
+      } u_height;
+      u_height.real = this->height;
+      *(outbuffer + offset + 0) = (u_height.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_height.base >> (8 * 1)) & 0xFF;
+      *(outbuffer + offset + 2) = (u_height.base >> (8 * 2)) & 0xFF;
+      *(outbuffer + offset + 3) = (u_height.base >> (8 * 3)) & 0xFF;
       offset += sizeof(this->height);
-      *(outbuffer + offset + 0) = (this->width >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (this->width >> (8 * 1)) & 0xFF;
-      *(outbuffer + offset + 2) = (this->width >> (8 * 2)) & 0xFF;
-      *(outbuffer + offset + 3) = (this->width >> (8 * 3)) & 0xFF;
+      union {
+        unsigned long real;
+        unsigned long base;
+      } u_width;
+      u_width.real = this->width;
+      *(outbuffer + offset + 0) = (u_width.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_width.base >> (8 * 1)) & 0xFF;
+      *(outbuffer + offset + 2) = (u_width.base >> (8 * 2)) & 0xFF;
+      *(outbuffer + offset + 3) = (u_width.base >> (8 * 3)) & 0xFF;
       offset += sizeof(this->width);
-      uint32_t * length_encoding = (uint32_t *)(outbuffer + offset);
+      long * length_encoding = (long *)(outbuffer + offset);
       *length_encoding = strlen( (const char*) this->encoding);
       offset += 4;
       memcpy(outbuffer + offset, this->encoding, *length_encoding);
       offset += *length_encoding;
-      *(outbuffer + offset + 0) = (this->is_bigendian >> (8 * 0)) & 0xFF;
+      union {
+        unsigned char real;
+        unsigned char base;
+      } u_is_bigendian;
+      u_is_bigendian.real = this->is_bigendian;
+      *(outbuffer + offset + 0) = (u_is_bigendian.base >> (8 * 0)) & 0xFF;
       offset += sizeof(this->is_bigendian);
-      *(outbuffer + offset + 0) = (this->step >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (this->step >> (8 * 1)) & 0xFF;
-      *(outbuffer + offset + 2) = (this->step >> (8 * 2)) & 0xFF;
-      *(outbuffer + offset + 3) = (this->step >> (8 * 3)) & 0xFF;
+      union {
+        unsigned long real;
+        unsigned long base;
+      } u_step;
+      u_step.real = this->step;
+      *(outbuffer + offset + 0) = (u_step.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_step.base >> (8 * 1)) & 0xFF;
+      *(outbuffer + offset + 2) = (u_step.base >> (8 * 2)) & 0xFF;
+      *(outbuffer + offset + 3) = (u_step.base >> (8 * 3)) & 0xFF;
       offset += sizeof(this->step);
       *(outbuffer + offset++) = data_length;
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
       *(outbuffer + offset++) = 0;
-      for( uint8_t i = 0; i < data_length; i++){
-      *(outbuffer + offset + 0) = (this->data[i] >> (8 * 0)) & 0xFF;
+      for( unsigned char i = 0; i < data_length; i++){
+      union {
+        unsigned char real;
+        unsigned char base;
+      } u_datai;
+      u_datai.real = this->data[i];
+      *(outbuffer + offset + 0) = (u_datai.base >> (8 * 0)) & 0xFF;
       offset += sizeof(this->data[i]);
       }
       return offset;
@@ -64,46 +87,71 @@ namespace sensor_msgs
     {
       int offset = 0;
       offset += this->header.deserialize(inbuffer + offset);
-      this->height |= ((uint32_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      this->height |= ((uint32_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      this->height |= ((uint32_t) (*(inbuffer + offset + 2))) << (8 * 2);
-      this->height |= ((uint32_t) (*(inbuffer + offset + 3))) << (8 * 3);
+      union {
+        unsigned long real;
+        unsigned long base;
+      } u_height;
+      u_height.base = 0;
+      u_height.base |= ((typeof(u_height.base)) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_height.base |= ((typeof(u_height.base)) (*(inbuffer + offset + 1))) << (8 * 1);
+      u_height.base |= ((typeof(u_height.base)) (*(inbuffer + offset + 2))) << (8 * 2);
+      u_height.base |= ((typeof(u_height.base)) (*(inbuffer + offset + 3))) << (8 * 3);
+      this->height = u_height.real;
       offset += sizeof(this->height);
-      this->width |= ((uint32_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      this->width |= ((uint32_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      this->width |= ((uint32_t) (*(inbuffer + offset + 2))) << (8 * 2);
-      this->width |= ((uint32_t) (*(inbuffer + offset + 3))) << (8 * 3);
+      union {
+        unsigned long real;
+        unsigned long base;
+      } u_width;
+      u_width.base = 0;
+      u_width.base |= ((typeof(u_width.base)) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_width.base |= ((typeof(u_width.base)) (*(inbuffer + offset + 1))) << (8 * 1);
+      u_width.base |= ((typeof(u_width.base)) (*(inbuffer + offset + 2))) << (8 * 2);
+      u_width.base |= ((typeof(u_width.base)) (*(inbuffer + offset + 3))) << (8 * 3);
+      this->width = u_width.real;
       offset += sizeof(this->width);
-      uint32_t length_encoding = *(uint32_t *)(inbuffer + offset);
+      long * length_encoding = (long *)(inbuffer + offset);
       offset += 4;
-      for(unsigned int k= offset; k< offset+length_encoding; ++k){
-          inbuffer[k-1]=inbuffer[k];
-      }
-      inbuffer[offset+length_encoding-1]=0;
-      this->encoding = (char *)(inbuffer + offset-1);
-      offset += length_encoding;
-      this->is_bigendian |= ((uint8_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      this->encoding = (inbuffer + offset);
+      offset += *length_encoding;
+      union {
+        unsigned char real;
+        unsigned char base;
+      } u_is_bigendian;
+      u_is_bigendian.base = 0;
+      u_is_bigendian.base |= ((typeof(u_is_bigendian.base)) (*(inbuffer + offset + 0))) << (8 * 0);
+      this->is_bigendian = u_is_bigendian.real;
       offset += sizeof(this->is_bigendian);
-      this->step |= ((uint32_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      this->step |= ((uint32_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      this->step |= ((uint32_t) (*(inbuffer + offset + 2))) << (8 * 2);
-      this->step |= ((uint32_t) (*(inbuffer + offset + 3))) << (8 * 3);
+      union {
+        unsigned long real;
+        unsigned long base;
+      } u_step;
+      u_step.base = 0;
+      u_step.base |= ((typeof(u_step.base)) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_step.base |= ((typeof(u_step.base)) (*(inbuffer + offset + 1))) << (8 * 1);
+      u_step.base |= ((typeof(u_step.base)) (*(inbuffer + offset + 2))) << (8 * 2);
+      u_step.base |= ((typeof(u_step.base)) (*(inbuffer + offset + 3))) << (8 * 3);
+      this->step = u_step.real;
       offset += sizeof(this->step);
-      uint8_t data_lengthT = *(inbuffer + offset++);
+      unsigned char data_lengthT = *(inbuffer + offset++);
       if(data_lengthT > data_length)
-        this->data = (uint8_t*)realloc(this->data, data_lengthT * sizeof(uint8_t));
+        this->data = (unsigned char*)realloc(this->data, data_lengthT * sizeof(unsigned char));
       offset += 3;
       data_length = data_lengthT;
-      for( uint8_t i = 0; i < data_length; i++){
-      this->st_data |= ((uint8_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      for( unsigned char i = 0; i < data_length; i++){
+      union {
+        unsigned char real;
+        unsigned char base;
+      } u_st_data;
+      u_st_data.base = 0;
+      u_st_data.base |= ((typeof(u_st_data.base)) (*(inbuffer + offset + 0))) << (8 * 0);
+      this->st_data = u_st_data.real;
       offset += sizeof(this->st_data);
-        memcpy( &(this->data[i]), &(this->st_data), sizeof(uint8_t));
+        memcpy( &(this->data[i]), &(this->st_data), sizeof(unsigned char));
       }
      return offset;
     }
 
     const char * getType(){ return "sensor_msgs/Image"; };
-    const char * getMD5(){ return "060021388200f6f0f447d0fcd9c64743"; };
 
   };
 

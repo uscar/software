@@ -1,10 +1,8 @@
-#ifndef _ROS_std_msgs_Float32_h
-#define _ROS_std_msgs_Float32_h
+#ifndef ros_Float32_h
+#define ros_Float32_h
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "ros/msg.h"
+#include "Arduino.h"
+#include "ros.h"
 
 namespace std_msgs
 {
@@ -14,12 +12,12 @@ namespace std_msgs
     public:
       float data;
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer)
     {
       int offset = 0;
       union {
         float real;
-        uint32_t base;
+        unsigned long base;
       } u_data;
       u_data.real = this->data;
       *(outbuffer + offset + 0) = (u_data.base >> (8 * 0)) & 0xFF;
@@ -35,20 +33,19 @@ namespace std_msgs
       int offset = 0;
       union {
         float real;
-        uint32_t base;
+        unsigned long base;
       } u_data;
       u_data.base = 0;
-      u_data.base |= ((uint32_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      u_data.base |= ((uint32_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      u_data.base |= ((uint32_t) (*(inbuffer + offset + 2))) << (8 * 2);
-      u_data.base |= ((uint32_t) (*(inbuffer + offset + 3))) << (8 * 3);
+      u_data.base |= ((typeof(u_data.base)) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_data.base |= ((typeof(u_data.base)) (*(inbuffer + offset + 1))) << (8 * 1);
+      u_data.base |= ((typeof(u_data.base)) (*(inbuffer + offset + 2))) << (8 * 2);
+      u_data.base |= ((typeof(u_data.base)) (*(inbuffer + offset + 3))) << (8 * 3);
       this->data = u_data.real;
       offset += sizeof(this->data);
      return offset;
     }
 
     const char * getType(){ return "std_msgs/Float32"; };
-    const char * getMD5(){ return "73fcbf46b49191e672908e50842a83d4"; };
 
   };
 

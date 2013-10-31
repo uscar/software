@@ -32,9 +32,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef ROS_TIME_H_
-#define ROS_TIME_H_
+/* 
+ * Author: Michael Ferguson
+ */
 
+#ifndef ros_time_h_included
+#define ros_time_h_included
+
+#include <ros.h>
 #include <ros/duration.h>
 #include <math.h>
 

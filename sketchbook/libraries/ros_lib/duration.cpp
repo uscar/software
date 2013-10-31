@@ -32,8 +32,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <math.h>
-#include "ros/duration.h"
+/* 
+ * Author: Michael Ferguson
+ */
+
+#include <ros/duration.h>
 
 namespace ros
 {
