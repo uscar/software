@@ -1,6 +1,8 @@
 #ifndef APM_Compass_h
 #define APM_Compass_h
 
+#include <Arduino.h>
+
 class APM_Compass_Class
 {
   private:	
