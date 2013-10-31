@@ -1,49 +1,0 @@
-10
-
-dir
-429
-https://uscrs.googlecode.com/svn/trunk/beohawk/software/Arduino/libraries
-https://uscrs.googlecode.com/svn
-
-
-
-2011-04-13T04:45:30.536490Z
-338
-zhaiyj1234@gmail.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-e042bffb-d12e-8dcf-de43-9400f19d82cf
-
-APM_RC
-dir
-
-APM_Compass
-dir
-
-APM_ADC
-dir
-
-AP_ADC
-dir
-
-APM_BMP085
-dir
-
-GPS_NMEA
-dir
-
-AP_Math
-dir
-
