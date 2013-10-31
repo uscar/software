@@ -16,7 +16,7 @@ void setup() {
   Serial.begin(BAUDRATE);
 #endif
 
-  Wire.begin();RC
+  Wire.begin();
 
   pinMode(LEDYELLOW,OUTPUT);
   pinMode(LEDRED,OUTPUT);
