@@ -1,3 +1,5 @@
+#include <PID.h>
+
 #include <AP_ADC_HIL.h>
 #include <AP_ADC.h>
 
@@ -16,9 +18,10 @@
 #include <AP_Notify.h>
 #include "uscar_printing.h";
 
+
+
 const AP_HAL::HAL& hal = AP_HAL_AVR_APM2;
 AP_InertialSensor_MPU6000 ins;
-
 
 void setup(void)
 {
@@ -31,10 +34,25 @@ void setup(void)
 
 void loop(void)
 {
-  hal.scheduler->delay(10);
+  hal.scheduler->delay(100);
+  printRC();
   printIMU();
 }
+void printRC(){
 
+    uint16_t channels[8];
+    hal.rcin->read(channels, 8);
+    hal.console->printf_P(
+        PSTR("rcin: %u %u %u %u %u %u %u %u\r\n"),
+        channels[0],
+        channels[1],
+        channels[2],
+        channels[3],
+        channels[4],
+        channels[5],
+        channels[6],
+        channels[7]);
+}
 void printIMU(){
   Vector3f acc;
   float acc_amp;
