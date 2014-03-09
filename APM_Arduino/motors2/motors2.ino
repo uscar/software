@@ -45,37 +45,32 @@ AP_MotorsQuad   motors(&rc1, &rc2, &rc3, &rc4);
 void setup()
 {
     hal.console->println("AP_Motors library test ver 1.0");
+//    rc1.set_type(RC_CHANNEL_TYPE_ANGLE_RAW);
+//    rc2.set_type(RC_CHANNEL_TYPE_ANGLE_RAW);
+//    rc3.set_type(RC_CHANNEL_TYPE_ANGLE_RAW);
+//    rc4.set_type(RC_CHANNEL_TYPE_ANGLE_RAW);
+    rc3.set_type(RC_CHANNEL_TYPE_RANGE);
+    rc3.set_range(0,1000); // the range of values expected from servo_out.
+    rc3.radio_min = 1000; // the range of output values
+    rc3.radio_max = 2000;
     
-    rc1.radio_min = rc2.radio_min = rc3.radio_min = rc4.radio_min = 1000;
-    rc1.radio_max = rc2.radio_max = rc3.radio_max = rc4.radio_max = 2000;
-    rc1.set_range(1000,2000);
-    rc2.set_range(1000,2000);
-    rc3.set_range(1000,2000);
-    rc4.set_range(1000,2000);
-    
-    
-    rc3.servo_out = 1;    
-    rc3.set_type(RC_CHANNEL_TYPE_ANGLE_RAW);
+    rc1.set_range(0,1000); 
+    rc2.set_range(0,1000);
+    rc4.set_range(0,1000);
+
+    rc2.servo_out = 1000;
+
     // motor initialisation
     motors.set_update_rate(490);
     motors.set_frame_orientation(AP_MOTORS_X_FRAME);
-//    motors.set_min_throttle(1000);
+//    motors.set_min_throttle(1150);
 //    motors.set_mid_throttle(1500);
-
-
-    hal.console->printf("setup : %i\n",(int)motors.setup_throttle_curve());
-    
-
+    rc3.set_pwm(1000);
+    rc3.trim();
     
     motors.Init();      // initialise motors
-
-    hal.console->printf("%i,%i",(int)rc3.radio_min,(int)rc3.radio_max);
-
     motors.enable();
-    motors.output_min();
-    rc1.set_pwm(1000);
-    rc2.set_pwm(1000);
-    rc4.set_pwm(1000);
+
     hal.scheduler->delay(1000);
 }
 
@@ -106,19 +101,15 @@ void loop()
     if( value == 'n'){
        hal.console->println("testing nam");
        motors.armed(true);
-      for(int i = 0;i<500;i++){
-         rc3.servo_out = 2*i;
-//        rc3.set_pwm(8*i);
-         hal.console->printf("\n - - - %i",(int)rc3.servo_out);
-         hal.console->printf("\n---%i",(int)motors.get_max_throttle());
-         hal.console->printf("\n%i %i -> %i , %i",rc3.control_in,rc3.radio_in,rc3.pwm_out,rc3.radio_out);
-         hal.console->printf("\n%i - ",i);
-//       motors.output_min();
+      for(int i = 0;i<200;i++){
+         rc3.servo_out = 5*i;
+//         rc3.calc_pwm();
          motors.output();
 //         motors.throttle_pass_through();
          print_motor_output();
-         hal.console->printf("\n%i%i%i%i",(int)motors.limit.throttle_upper,(int)motors.limit.throttle_lower,(int)motors.limit.yaw,(int)motors.limit.roll_pitch);
-
+//         hal.console->printf("%i%i%i%i",(int)motors.limit.throttle_upper,(int)motors.limit.throttle_lower,(int)motors.limit.yaw,(int)motors.limit.roll_pitch);
+         hal.console->printf("\nservo | radio | pwm  ||servo | radio | pwm  \n");
+         hal.console->printf("%04i   %04i    %04i    %04i   %04i    %04i   \n",(int)rc3.servo_out,(int)rc3.radio_out,(int)rc3.pwm_out,(int)rc2.servo_out,(int)rc2.radio_out,(int)rc2.pwm_out);
          hal.scheduler->delay(50);
        }
        motors.output_min();

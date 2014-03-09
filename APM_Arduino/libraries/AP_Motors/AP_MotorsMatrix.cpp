@@ -136,6 +136,7 @@ void AP_MotorsMatrix::output_armed()
         _rc_throttle->servo_out = 0;
         limit.throttle_lower = true;
     }
+
     if (_rc_throttle->servo_out > _max_throttle) {
         _rc_throttle->servo_out = _max_throttle;
         limit.throttle_upper = true;
@@ -167,9 +168,7 @@ void AP_MotorsMatrix::output_armed()
         limit.roll_pitch = true;
         limit.yaw = true;
         limit.throttle_lower = true;
-
     } else {
-
         // check if throttle is below limit
         if (_rc_throttle->radio_out <= out_min_pwm) {       // perhaps being at min throttle itself is not a problem, only being under is
             limit.throttle_lower = true;
@@ -245,7 +244,8 @@ void AP_MotorsMatrix::output_armed()
                 }
             }
         }
-
+        
+        
         // check everything fits
         thr_adj = _rc_throttle->radio_out - out_best_thr_pwm;
 

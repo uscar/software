@@ -109,6 +109,14 @@ void AP_Motors::armed(bool arm)
     AP_Notify::flags.armed = arm;
 };
 
+void AP_Motors::set_max_throttle(uint16_t max_throttle){
+    _max_throttle = max_throttle;
+}
+
+uint16_t AP_Motors::get_max_throttle() {
+    return _max_throttle;
+}
+
 // set_min_throttle - sets the minimum throttle that will be sent to the engines when they're not off (i.e. to prevents issues with some motors spinning and some not at very low throttle)
 void AP_Motors::set_min_throttle(uint16_t min_throttle)
 {
