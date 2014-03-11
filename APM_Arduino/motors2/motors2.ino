@@ -119,10 +119,31 @@ void loop()
     if(value == 'b'){
       for(int i = 1150;i<2000;i+=10){
           hal.rcout->write(CH_1,i);
+          hal.rcout->write(CH_2,i);
           hal.rcout->write(CH_3,i);
+          hal.rcout->write(CH_4,i);
           hal.console->printf("outputting: %i\n",i);
           hal.scheduler->delay(20);
       }
+      if(value = 'h'){
+         hal.rcout->write(CH_1,2000);
+         hal.rcout->write(CH_2,2000);
+         hal.rcout->write(CH_3,2000);
+         hal.rcout->write(CH_4,2000); 
+      }
+      if(value = 'l'){
+        hal.rcout->write(CH_1,1000);
+        hal.rcout->write(CH_2,1000); 
+        hal.rcout->write(CH_3,1000);
+        hal.rcout->write(CH_4,1000);
+      }
+      if(value = '0'){
+        hal.rcout->write(CH_1,0);
+        hal.rcout->write(CH_2,0);
+        hal.rcout->write(CH_3,0);
+        hal.rcout->write(CH_4,0);
+      }
+      
       hal.scheduler->delay(500);
       hal.rcout->write(CH_1,0);
       hal.rcout->write(CH_3,0);
