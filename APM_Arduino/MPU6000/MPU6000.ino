@@ -151,11 +151,20 @@ void run_level()
     display_offsets_and_scaling();
 }
 
+
 void run_test()
 {
     Vector3f accel;
-    Vector3f gyro;
-    float length;
+    Vector3f prev_accel;
+
+    /*
+    Vector3f veloc;
+    
+    veloc.x = 0; veloc.y = 0; veloc.z = 0; */
+    
+    float lenA, lenP_A = 0, lenV = 0, velocZ = 0, Gtotal = 0, gravity = 0,
+          acc = 0, Vtotal = 0, time = 0;
+    long int mill = 0;
 	uint8_t counter = 0;
 
     // flush any user input
@@ -166,24 +175,55 @@ void run_test()
     // clear out any existing samples from ins
     ins.update();
 
+    int prev_time = hal.scheduler->millis();
+    int start_time = hal.scheduler->millis();
+
     // loop as long as user does not press a key
     while( !hal.console->available() ) {
-
+  
         // wait until we have a sample
         while (ins.sample_available() == false) /* noop */ ;
 
         // read samples from ins
         ins.update();
         accel = ins.get_accel();
-        gyro = ins.get_gyro();
-
-        length = accel.length();
-
-		if (counter++ % 50 == 0) {
-			// display results
-			hal.console->printf_P(PSTR("Accel X:%4.2f \t Y:%4.2f \t Z:%4.2f \t len:%4.2f \t Gyro X:%4.2f \t Y:%4.2f \t Z:%4.2f\n"), 
-								  accel.x, accel.y, accel.z, length, gyro.x, gyro.y, gyro.z);
+        lenA = accel.length();
+        
+        /*
+        Calibration variable
+        avg magnitude of acceleration = g = -8.8
+        from start time to current time
+        
+        then take ( |a| - g) and integrate
+        */
+        
+		if (counter++ % 10 == 0) {
+	     hal.console->printf_P(PSTR("Accel X:%4.2f \t Y:%4.2f \t Z:%4.2f \t len:%4.2f \t g:%4.2f \t ACCEL:%5.2f\t V:%4.2f\t time:%d\n"), 
+								  accel.x, accel.y, accel.z, lenA, gravity, acc, Vtotal, mill ); // display results
 		}
+
+        mill = hal.scheduler->millis() - prev_time;
+        if(mill) {
+           if(lenA != 0)
+           {
+             if(time < 25000) // takes 25 seconds to take constant acceleration
+             {
+               time = hal.scheduler->millis() - start_time;
+               Gtotal = lenA*mill + Gtotal;
+               gravity = Gtotal / time;
+             }
+             acc = lenA - gravity;
+             if(acc > 0.2 || acc < -0.2) // evaluates velocity
+               Vtotal = (acc*mill/1000) + Vtotal;
+             else if(Vtotal > -0.5 && Vtotal < 0.5) Vtotal = 0;
+           }
+           else
+           {
+             start_time = hal.scheduler->millis();
+             Gtotal = lenA;
+           }
+           prev_time = hal.scheduler->millis();
+        }
     }
 
     // clear user input
@@ -191,5 +231,6 @@ void run_test()
         hal.console->read();
     }
 }
+
 
 AP_HAL_MAIN();
