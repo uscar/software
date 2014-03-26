@@ -137,6 +137,10 @@ public:
     // var_info for holding Parameter information
     static const struct AP_Param::GroupInfo        var_info[];
 
+    
+    void set_max_throttle(uint16_t max_throttle);
+    uint16_t get_max_throttle();
+    
 protected:
 
     // output functions that should be overloaded by child classes
