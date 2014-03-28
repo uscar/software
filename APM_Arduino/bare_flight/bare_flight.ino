@@ -65,6 +65,7 @@ Vector3f old_cntrl_up;
 
 //non-vector command storage
 float cntrl_yaw;
+float old_cntrl_yaw;
 int cntrl_throttle;
 
 //motors abstractions handles the mapping of command to motor output
@@ -105,13 +106,13 @@ int lin_map(int value, int min_v, int max_v, int min_o, int max_o){
 void setup_m_rc(){
 
 //setting to less than 1000 scales up control effect
-    m_throttle.set_range(0,750 );//should be 1000 probs.
+    m_throttle.set_range(0,1000 );//should be 1000 probs.
     m_roll.set_range    (0,1000);
     m_pitch.set_range   (0,1000);
     m_yaw.set_range     (0,1000);
     
     m_throttle.radio_min = 1000;
-    m_throttle.radio_max = 2000;
+    m_throttle.radio_max = 2200;
 
     m_roll.servo_out = 0;
     m_pitch.servo_out = 0;
@@ -148,6 +149,7 @@ void setup(void)
 
     ///not the right place but it is a nice thought    
     old_cntrl_up = cntrl_up;
+    old_cntrl_yaw = cntrl_yaw;
 }
 
 //called itteratively
@@ -164,8 +166,33 @@ void loop(void){
 
     //get new instrument measurement
     ins.update();
-
-
+/*
+    if(hal.console->available()){
+      char c = hal.console->read();
+      char d = hal.console->read();
+      if(d == '='){
+        if(c == 'p'){
+          float kp;
+          hal.console->scan("%f",&kp);
+          pid_roll.kP(kp);
+          pid_pitch.kP(kp);
+        }
+        if(c == 'd'){
+          float kd = hal.console->parseFloat();
+          pid_roll.kD(kd);
+          pid_pitch.kD(kd);
+        }
+        if(c == 'i'){
+          float ki = hal.console->parseFloat();
+          pid_roll.kI(ki);
+          pid_pitch.kI(ki);
+        }
+      }
+      while(hal.console->available()){
+        hal.console->read();
+      }
+    }
+*/
     //compute the control value coresponding to current IMU output
     //should be scaled to -100 -> 100 for now
     Vector3f acc = ins.get_accel();
@@ -205,15 +232,17 @@ void loop(void){
     int roll_actual = (-1)*down.y*CNTRL_RANGE;
     int pitch_actual = down.x*CNTRL_RANGE;
     int throttle_actual = cntrl_throttle; //TODO: change this out with some f(height)
-    int yaw_actual = gyr.z*YAW_SCALE;                  //this may require some scaling
+    int yaw_actual = (-1)*gyr.z*YAW_SCALE;                  //this may require some scaling
 
 
     read_rc_inputs();
 
-    Vector3f d_cntrl = (cntrl_up - old_cntrl_up)/dt;
+//    Vector3f d_cntrl = (cntrl_up - old_cntrl_up)/dt;
     old_cntrl_up = cntrl_up;
-
-    Vector3f gyr_err = (gyr - d_cntrl)*GYR_ERR_SCALE;
+//    float d_cntrl_yaw = (cntrl_yaw - old_cntrl_yaw)/dt;
+    old_cntrl_yaw = cntrl_yaw;
+    Vector3f gyr_err = (gyr)*GYR_ERR_SCALE;
+    //TODO: consider adding a gyr_err  threshold value.
 
     //    if(counter==0){
     //      printv3f(d_cntrl);
@@ -231,9 +260,18 @@ void loop(void){
     int pitch_error    =  err.x*CNTRL_RANGE ;
     int throttle_error =  cntrl_throttle - throttle_actual;
     int yaw_error      =  int_cntrl_yaw - yaw_actual;
-
-    int r_correction = error_scale*(pid_roll.get_pid(roll_error,dt)- (int)gyr_err.x);
-    int p_correction = error_scale*(pid_pitch.get_pid(pitch_error,dt)+ (int)gyr_err.y);
+    int pitch_pid_err = pid_pitch.get_pid(pitch_error,dt);
+    int roll_pid_err = pid_roll.get_pid(roll_error,dt);
+    if(DEBUG_GYRERR || DEBUG_ALL){
+      if(counter == 0)
+         hal.console->printf("gyr_err roll = %i pitch = %i\n",int((-1)*error_scale*gyr_err.x),int(error_scale*gyr_err.y));
+    }
+    if(DEBUG_ACCERR || DEBUG_ALL){
+      if(counter == 0)
+        hal.console->printf("acc_err roll = %04i pitch = %04i\n", error_scale*roll_pid_err,error_scale*pitch_pid_err);
+    }
+    int r_correction = error_scale*(roll_pid_err - int(gyr_err.x));
+    int p_correction = error_scale*(pitch_pid_err + int(gyr_err.y));
     int t_correction = error_scale*pid_throttle.get_pid(throttle_error,dt);
     int y_correction = error_scale*pid_yaw.get_pid(yaw_error,dt);
 
