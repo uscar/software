@@ -77,7 +77,7 @@ int timestamp;
 int t0;
 int counter = 0;
 
-
+int  armed;
 //reads remote control inputs and sets c vals
 void read_rc_inputs(){
 
@@ -85,6 +85,14 @@ void read_rc_inputs(){
     int pitch       = hal.rcin->read(CH_2);
     int throttle    = hal.rcin->read(CH_3);
     int yaw         = hal.rcin->read(CH_4);
+    
+    if (yaw < REMOTE_MIN + 50 && throttle < REMOTE_MIN +50){
+      armed = true;
+    }
+    if (yaw > REMOTE_MAX - 50 && throttle < REMOTE_MIN+50){
+      armed = false;
+    }
+    
     
     float range = REMOTE_MAX-REMOTE_MIN;
 
@@ -122,6 +130,7 @@ void setup_m_rc(){
 //called once on reset
 void setup(void)
 {
+    armed = false;
     ins.init(AP_InertialSensor::COLD_START,AP_InertialSensor::RATE_100HZ);
 
     // HAL will start serial port at 115200.
@@ -138,7 +147,6 @@ void setup(void)
     motors.Init();
     motors.set_update_rate(500);
     motors.enable();
-    motors.armed(true);
 
     //setup timing
     t0 = timestamp = hal.scheduler->micros();
@@ -157,7 +165,13 @@ void loop(void){
     //for periodic outputs
     counter++;
     counter %= 50;
-
+    if(armed){
+      motors.armed(true);
+    }
+    else{
+      motors.armed(false);
+    }
+    
     //update the time locks/ time updates
     int t = hal.scheduler->micros();
     float dt = (t - timestamp)/1000.0;
@@ -195,19 +209,19 @@ void loop(void){
 */
     //compute the control value coresponding to current IMU output
     //should be scaled to -100 -> 100 for now
-    Vector3f acc = ins.get_accel();
+    Vector3f acc = ins.get_accel() - acc_offset;
     Vector3f gyr = ins.get_gyro();
     Vector3f filtered_acc;
 
     //apply a low pass filter    
-    filtered_acc.x = filt_x.apply(acc.x);
-    filtered_acc.y = filt_y.apply(acc.y);
-    filtered_acc.z = filt_z.apply(acc.z);
+//    filtered_acc.x = filt_x.apply(acc.x);
+//    filtered_acc.y = filt_y.apply(acc.y);
+//    filtered_acc.z = filt_z.apply(acc.z);
 
     //turn off the filtering
-    //    filtered_acc.x = acc.x;
-    //    filtered_acc.y = acc.y;
-    //    filtered_acc.z = acc.z;
+        filtered_acc.x = acc.x;
+        filtered_acc.y = acc.y;
+        filtered_acc.z = acc.z;
 
 
     //normalize (length = 1)
@@ -293,9 +307,9 @@ void loop(void){
     }
 
     int roll_out = int_cntrl_roll + r_correction;
-    int pitch_out = int_cntrl_pitch + p_correction;
+    int pitch_out = int_cntrl_pitch - p_correction;
     int throttle_out = int_cntrl_throttle + t_correction;
-    int yaw_out = int_cntrl_yaw + y_correction;
+    int yaw_out = int_cntrl_yaw - y_correction;
 
     if(DEBUG_CNTRL || DEBUG_ALL){
         if(counter == 0)

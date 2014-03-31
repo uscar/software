@@ -7,6 +7,7 @@
 //IMU consts
 
 float offset_acc[3]  = {-.105,.800,1.0};
+Vector3f acc_offset(-.18, .66, 1.1);
 float scale_acc[3]   = {1,1,1};
 float offset_gyr[3]  = {-.001,-.0001,.0002};
 float scale_gyr[3]   = {1,1,1};
@@ -39,12 +40,12 @@ float scale_gyr[3]   = {1,1,1};
 #define t_d    0.02
 #define t_imax 0.5
 
-#define y_p          0.500
+#define y_p          5.000
 #define y_i          0.005
 #define y_d          0.000
 #define y_imax       8
 
-#define error_scale 2
+#define error_scale 1
 //was .5
 
 //low pass filter
@@ -52,12 +53,12 @@ float scale_gyr[3]   = {1,1,1};
 #define cutout 40
 
 
-#define GYR_ERR_SCALE 200
+#define GYR_ERR_SCALE 150
 //was 450
 
 #define INV_ROLL false
 #define INV_YAW true
-#define INV_PITCH false
+#define INV_PITCH true
 
 
 //debugging setup
@@ -65,7 +66,7 @@ float scale_gyr[3]   = {1,1,1};
 #define DEBUG_FILTER false
 #define DEBUG_PID true
 #define DEBUG_ACTUAL true
-#define DEBUG_MOTOR false
+#define DEBUG_MOTOR true
 #define DEBUG_TIMER false
 #define DEBUG_OUTPUT false
 #define DEBUG_PWM false
