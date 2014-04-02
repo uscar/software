@@ -1,9 +1,10 @@
+extern const AP_HAL::HAL& hal;
 
 //<---------declarations-------->
-void printv3f(Vector3f & v, const AP_HAL::HAL & h);
+void printv3f(Vector3f & v);
 
 //<-------implementations------->
-void printv3f(Vector3f & v, const AP_HAL::HAL & h){
-  h.console->printf("<%f,%f,%f>",v.x,v.y,v.z); 
+void printv3f(Vector3f & v){
+  hal.console->printf("<%f,%f,%f>\n",v.x,v.y,v.z); 
 }
 
