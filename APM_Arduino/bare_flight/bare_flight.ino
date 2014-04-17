@@ -1,14 +1,14 @@
 /***********************************NOTES***************************************
 
 RC_Channel:
-    radio_in = the pwm value given in
-    control_in = the range mapped output value 
-    .output() doesn't need to be called (it is for reading from a hal rc
-    radio_max = max input value
-    radio_min = min input value
-    .set_range(int min, int max) : min = min output, max = max output
+radio_in = the pwm value given in
+control_in = the range mapped output value 
+.output() doesn't need to be called (it is for reading from a hal rc
+radio_max = max input value
+radio_min = min input value
+.set_range(int min, int max) : min = min output, max = max output
 AP_Motors:
-    uses the radio_in     
+uses the radio_in     
  *******************************************************************************/
 
 
@@ -85,22 +85,22 @@ void read_rc_inputs(){
     int pitch       = hal.rcin->read(CH_2);
     int throttle    = hal.rcin->read(CH_3);
     int yaw         = hal.rcin->read(CH_4);
-    
+
     if (yaw < REMOTE_MIN + 50 && throttle < REMOTE_MIN +50){
-      armed = true;
+        armed = true;
     }
     if (yaw > REMOTE_MAX - 50 && throttle < REMOTE_MIN+50){
-      armed = false;
+        armed = false;
     }
-    
-    
+
+
     float range = REMOTE_MAX-REMOTE_MIN;
 
     //calculate control value from input value
     cntrl_up.x = (INV_PITCH?-1:1)*(pitch - REMOTE_TRIM)*2.0/range;
     cntrl_up.y = (INV_ROLL?-1:1)*(roll - REMOTE_TRIM)*2.0/range;
     cntrl_up.z = CNTRL_Z_COMP; //dampens the control.
-    
+
     cntrl_up = cntrl_up.normalized();
     cntrl_yaw  = (INV_YAW?-1:1)*(yaw - REMOTE_TRIM)*2.0/range;
     cntrl_throttle = (throttle - REMOTE_MIN);
@@ -113,12 +113,12 @@ int lin_map(int value, int min_v, int max_v, int min_o, int max_o){
 
 void setup_m_rc(){
 
-//setting to less than 1000 scales up control effect
+    //setting to less than 1000 scales up control effect
     m_throttle.set_range(0,1000 );//should be 1000 probs.
     m_roll.set_range    (0,1000);
     m_pitch.set_range   (0,1000);
     m_yaw.set_range     (0,1000);
-    
+
     m_throttle.radio_min = 1000;
     m_throttle.radio_max = 2200;
 
@@ -166,12 +166,12 @@ void loop(void){
     counter++;
     counter %= 50;
     if(armed){
-      motors.armed(true);
+        motors.armed(true);
     }
     else{
-      motors.armed(false);
+        motors.armed(false);
     }
-    
+
     //update the time locks/ time updates
     int t = hal.scheduler->micros();
     float dt = (t - timestamp)/1000.0;
@@ -180,33 +180,33 @@ void loop(void){
 
     //get new instrument measurement
     ins.update();
-/*
-    if(hal.console->available()){
-      char c = hal.console->read();
-      char d = hal.console->read();
-      if(d == '='){
-        if(c == 'p'){
-          float kp;
-          hal.console->scan("%f",&kp);
-          pid_roll.kP(kp);
-          pid_pitch.kP(kp);
-        }
-        if(c == 'd'){
-          float kd = hal.console->parseFloat();
-          pid_roll.kD(kd);
-          pid_pitch.kD(kd);
-        }
-        if(c == 'i'){
-          float ki = hal.console->parseFloat();
-          pid_roll.kI(ki);
-          pid_pitch.kI(ki);
-        }
-      }
-      while(hal.console->available()){
-        hal.console->read();
-      }
-    }
-*/
+    /*
+       if(hal.console->available()){
+       char c = hal.console->read();
+       char d = hal.console->read();
+       if(d == '='){
+       if(c == 'p'){
+       float kp;
+       hal.console->scan("%f",&kp);
+       pid_roll.kP(kp);
+       pid_pitch.kP(kp);
+       }
+       if(c == 'd'){
+       float kd = hal.console->parseFloat();
+       pid_roll.kD(kd);
+       pid_pitch.kD(kd);
+       }
+       if(c == 'i'){
+       float ki = hal.console->parseFloat();
+       pid_roll.kI(ki);
+       pid_pitch.kI(ki);
+       }
+       }
+       while(hal.console->available()){
+       hal.console->read();
+       }
+       }
+     */
     //compute the control value coresponding to current IMU output
     //should be scaled to -100 -> 100 for now
     Vector3f acc = ins.get_accel() - acc_offset;
@@ -214,14 +214,14 @@ void loop(void){
     Vector3f filtered_acc;
 
     //apply a low pass filter    
-//    filtered_acc.x = filt_x.apply(acc.x);
-//    filtered_acc.y = filt_y.apply(acc.y);
-//    filtered_acc.z = filt_z.apply(acc.z);
+    //    filtered_acc.x = filt_x.apply(acc.x);
+    //    filtered_acc.y = filt_y.apply(acc.y);
+    //    filtered_acc.z = filt_z.apply(acc.z);
 
     //turn off the filtering
-        filtered_acc.x = acc.x;
-        filtered_acc.y = acc.y;
-        filtered_acc.z = acc.z;
+    filtered_acc.x = acc.x;
+    filtered_acc.y = acc.y;
+    filtered_acc.z = acc.z;
 
 
     //normalize (length = 1)
@@ -251,9 +251,9 @@ void loop(void){
 
     read_rc_inputs();
 
-//    Vector3f d_cntrl = (cntrl_up - old_cntrl_up)/dt;
+    //    Vector3f d_cntrl = (cntrl_up - old_cntrl_up)/dt;
     old_cntrl_up = cntrl_up;
-//    float d_cntrl_yaw = (cntrl_yaw - old_cntrl_yaw)/dt;
+    //    float d_cntrl_yaw = (cntrl_yaw - old_cntrl_yaw)/dt;
     old_cntrl_yaw = cntrl_yaw;
     Vector3f gyr_err = (gyr)*GYR_ERR_SCALE;
     //TODO: consider adding a gyr_err  threshold value.
@@ -277,12 +277,12 @@ void loop(void){
     int pitch_pid_err = pid_pitch.get_pid(pitch_error,dt);
     int roll_pid_err = pid_roll.get_pid(roll_error,dt);
     if(DEBUG_GYRERR || DEBUG_ALL){
-      if(counter == 0)
-         hal.console->printf("gyr_err roll = %i pitch = %i\n",int((-1)*error_scale*gyr_err.x),int(error_scale*gyr_err.y));
+        if(counter == 0)
+            hal.console->printf("gyr_err roll = %i pitch = %i\n",int((-1)*error_scale*gyr_err.x),int(error_scale*gyr_err.y));
     }
     if(DEBUG_ACCERR || DEBUG_ALL){
-      if(counter == 0)
-        hal.console->printf("acc_err roll = %04i pitch = %04i\n", error_scale*roll_pid_err,error_scale*pitch_pid_err);
+        if(counter == 0)
+            hal.console->printf("acc_err roll = %04i pitch = %04i\n", error_scale*roll_pid_err,error_scale*pitch_pid_err);
     }
     int r_correction = error_scale*(roll_pid_err - int(gyr_err.x));
     int p_correction = error_scale*(pitch_pid_err + int(gyr_err.y));
