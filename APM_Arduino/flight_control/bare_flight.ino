@@ -114,7 +114,7 @@ int lin_map(int value, int min_v, int max_v, int min_o, int max_o){
 void setup_m_rc(){
 
     //setting to less than 1000 scales up control effect
-    m_throttle.set_range(0,1000 );//should be 1000 probs.
+    m_throttle.set_range(0,1000);//should be 1000 probs.
     m_roll.set_range    (0,1000);
     m_pitch.set_range   (0,1000);
     m_yaw.set_range     (0,1000);

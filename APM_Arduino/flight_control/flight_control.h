@@ -30,19 +30,27 @@
 #include <RangeFinder.h>
 #include "constants.h"
 
+extern AP_HAL::HAL& hal;
+extern AP_InertialSensor_MPU6000 ins;
+
 class Flight_Control {
 public:
-	Flight_Control(RC_Channel* rc1, RC_Channel* rc2, RC_Channel* rc3, RC_Channel* rc4);
-	void arm();
+	Flight_Control();
+	void arm(bool);
 	void execute(Vector3f up, float throttle, float yaw);
-	void takeoff();
-	void altitudeHold();
-	void landing();
 private:
-	RC_Channel* rc1, rc2, rc3, rc4;
+	bool armed;
+	RC_Channel m_roll(2), m_pitch(3), m_throttle(1), m_yaw(4);
+	AP_MotorsQuad motors;
 	AC_PID* pid;
 	RangeFinder ultrasonic;
-	float _height;
+	AC_PID pid_roll     (r_p,r_i,r_d,r_imax);
+	AC_PID pid_pitch    (p_p,p_i,p_d,p_imax);
+	AC_PID pid_throttle (t_p,t_i,t_d,t_imax);
+	AC_PID pid_yaw      (y_p,y_i,y_d,y_imax);
+	kPID roll_pid;
+	kPID pitch_pid;
+	kPID yaw_pid;
 };
 
 #endif
