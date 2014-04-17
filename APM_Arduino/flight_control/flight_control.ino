@@ -31,7 +31,7 @@ Flight_Control::Flight_Control(RC_Channel* rc1, RC_Channel* rc2, RC_Channel* rc3
 	this->rc2 = rc2;
 	this->rc3 = rc3;
 	this->rc4 = rc4;
-	AC_PID pid (h_p, h_i, h_d, h_imax);
+	pid = new AC_PID (h_p, h_i, h_d, h_imax);
 }
 
 void Flight_Control::takeoff(){
