@@ -61,7 +61,7 @@ private:
 	AP_MotorsQuad motors(&m_roll,&m_pitch, &m_throttle, &m_yaw);
 	AC_PID* pid;
 	RangeFinder ultrasonic;
-<<<<<<< HEAD
+
 	kPID roll_pid  = {0.125,0.00,0.008,4};
 	kPID pitch_pid = {0.125,0.00,0.008,4};
 	kPID yaw_pid   = {5.000,0.005,0.000,8};
@@ -72,7 +72,7 @@ private:
 	AC_PID pid_yaw      (yaw_pid.P,yaw_pid.I,yaw_pid.D,yaw_pid.Imax);
 
         int gyrErrScale = 150;
-=======
+
 	AC_PID pid_roll     (r_p,r_i,r_d,r_imax);
 	AC_PID pid_pitch    (p_p,p_i,p_d,p_imax);
 	AC_PID pid_throttle (t_p,t_i,t_d,t_imax);
@@ -82,7 +82,7 @@ private:
 	kPID pPid = {0.125,0.00,0.008,4};
 	kPID yPid   = {5.000,0.005,0.000,8};
 	int gyrErrScale = 150;
->>>>>>> ca4438369fb7a8c6a5cee98ca3228ced4d1db882
+
 };
 
 #endif
