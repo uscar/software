@@ -42,7 +42,7 @@ struct kPID{
 class Flight_Control {
 public:
 	Flight_Control();
-	void arm(bool);
+	void arm(bool armed);
 	void execute(Vector3f up, float throttle, float yaw = 0);
 
 	void setRollPID(kPID rPid);
@@ -66,7 +66,7 @@ private:
 	AC_PID pid_throttle (t_p,t_i,t_d,t_imax);
 	AC_PID pid_yaw      (y_p,y_i,y_d,y_imax);
 
-	kPID rPID  = {0.125,0.00,0.008,4};
+	kPID rPid  = {0.125,0.00,0.008,4};
 	kPID pPid = {0.125,0.00,0.008,4};
 	kPID yPid   = {5.000,0.005,0.000,8};
 	int gyrErrScale = 150;
