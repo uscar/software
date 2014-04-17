@@ -117,6 +117,7 @@ void loop()
        hal.console->println("done"); 
     }
     if(value == 'b'){
+      motors.armed(true);
       for(int i = 1150;i<2000;i+=10){
           hal.rcout->write(CH_1,i);
           hal.rcout->write(CH_2,i);
@@ -125,29 +126,47 @@ void loop()
           hal.console->printf("outputting: %i\n",i);
           hal.scheduler->delay(20);
       }
-      if(value = 'h'){
-         hal.rcout->write(CH_1,2000);
-         hal.rcout->write(CH_2,2000);
-         hal.rcout->write(CH_3,2000);
-         hal.rcout->write(CH_4,2000); 
-      }
-      if(value = 'l'){
-        hal.rcout->write(CH_1,1000);
-        hal.rcout->write(CH_2,1000); 
-        hal.rcout->write(CH_3,1000);
-        hal.rcout->write(CH_4,1000);
-      }
-      if(value = '0'){
-        hal.rcout->write(CH_1,0);
-        hal.rcout->write(CH_2,0);
-        hal.rcout->write(CH_3,0);
-        hal.rcout->write(CH_4,0);
-      }
+      
+      
       
       hal.scheduler->delay(500);
       hal.rcout->write(CH_1,0);
       hal.rcout->write(CH_3,0);
     }
+    
+    
+      if(value == 'h'){
+        motors.armed(true);
+         hal.rcout->write(CH_1,2000);
+         hal.rcout->write(CH_2,2000);
+         hal.rcout->write(CH_3,2000);
+         hal.rcout->write(CH_4,2000); 
+      }
+      if(value == 'l'){
+        motors.armed(true);
+        hal.rcout->write(CH_1,1000);
+        hal.rcout->write(CH_2,1000); 
+        hal.rcout->write(CH_3,1000);
+        hal.rcout->write(CH_4,1000);
+      }
+      if(value == '0'){
+        motors.armed(true);
+        hal.rcout->write(CH_1,0);
+        hal.rcout->write(CH_2,0);
+        hal.rcout->write(CH_3,0);
+        hal.rcout->write(CH_4,0);
+      }
+      if(value == 'r'){
+        motors.armed(true);
+        while(1){
+          int val = hal.rcin->read(CH_3);
+          hal.rcout->write(CH_1,val);
+          hal.rcout->write(CH_2,val);
+          hal.rcout->write(CH_3,val);
+          hal.rcout->write(CH_4,val);
+          hal.console->printf("outputting: %i\n",val);
+        }
+      }
 }
 
 // print motor output
