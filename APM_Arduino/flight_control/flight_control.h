@@ -36,12 +36,12 @@ extern AP_InertialSensor_MPU6000 ins;
 class Flight_Control {
 public:
 	Flight_Control();
-	void arm(bool);
+	void arm(bool armed);
 	void execute(Vector3f up, float throttle, float yaw);
 private:
 	bool armed;
 	RC_Channel m_roll(2), m_pitch(3), m_throttle(1), m_yaw(4);
-	AP_MotorsQuad motors;
+	AP_MotorsQuad motors(&m_roll,&m_pitch, &m_throttle, &m_yaw);
 	AC_PID* pid;
 	RangeFinder ultrasonic;
 	AC_PID pid_roll     (r_p,r_i,r_d,r_imax);
