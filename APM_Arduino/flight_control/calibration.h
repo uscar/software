@@ -19,31 +19,10 @@ float scale_gyr[3]   = {1,1,1};
 #define REMOTE_MIN 1100
 #define REMOTE_TRIM 1500
 
-//Baro consts
-
-
-
-//PID values
-
-#define r_p      0.125
-#define r_i      0.00
-#define r_d      0.008
-#define r_imax   4
-
-#define p_p     0.125
-#define p_i     0.00
-#define p_d     0.008
-#define p_imax  4
-
 #define t_p    1.0
 #define t_i    0.001
 #define t_d    0.02
 #define t_imax 0.5
-
-#define y_p          5.000
-#define y_i          0.005
-#define y_d          0.000
-#define y_imax       8
 
 #define error_scale 1
 //was .5
@@ -52,14 +31,9 @@ float scale_gyr[3]   = {1,1,1};
 #define update_hz 1000
 #define cutout 40
 
-
-#define GYR_ERR_SCALE 150
-//was 450
-
 #define INV_ROLL false
 #define INV_YAW true
 #define INV_PITCH true
-
 
 //debugging setup
 #define DEBUG_ALL false
