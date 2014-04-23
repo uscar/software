@@ -26,18 +26,25 @@
 #include "flight_control.h"
 
 Flight_Control::Flight_Control(){
-	this->armed = false;
+    setGyrFactor(150);
+
+    // m_roll = new RC_Channel(2);
+    // m_pitch = new RC_Channel(3);
+    // m_throttle = new RC_Channel(1);
+    // m_yaw = new RC_Channel(4);
+    // motors = new AP_MotorsQuad(Flight_Control::m_roll, Flight_Control::m_pitch, Flight_Control::m_throttle, Flight_Control::m_yaw);
+    this->armed = false;
     ins.init(AP_InertialSensor::COLD_START,AP_InertialSensor::RATE_100HZ);
 
-    // HAL will start serial port at 115200.
+// HAL will start serial port at 115200.
     hal.console->println_P(PSTR("Starting!"));
 
-    //defines the mapping system from RC command to motor effect (defined in quad)
+//defines the mapping system from RC command to motor effect (defined in quad)
     motors.set_frame_orientation(AP_MOTORS_X_FRAME);//motors.set_frame_orientation(AP_MOTORS_H_FRAME);
-    //motors.min_throttle is in terms of servo values not output values.
+//motors.min_throttle is in terms of servo values not output values.
 
-    //setup rc
-    setup_m_rc();
+//setup rc
+    //setup_m_rc();
 
     //setup motors
     motors.Init();
@@ -50,18 +57,14 @@ Flight_Control::Flight_Control(){
     //kill the barometer
     hal.gpio->pinMode(40, GPIO_OUTPUT);
     hal.gpio->write(40,1);
-
-    ///not the right place but it is a nice thought    
-/*  old_cntrl_up = cntrl_up;
-    old_cntrl_yaw = cntrl_yaw;*/
 }
 
 void Flight_Control::arm(bool armed){
 	this->armed = armed;
-    motors.arm(armed);
+    motors.armed(armed);
 }
 
-void Flight_Control::setup_m_rc(){
+/*void Flight_Control::setup_m_rc(){
 	m_throttle.set_range(0,1000);//should be 1000 probs.
     m_roll.set_range    (0,1000);
     m_pitch.set_range   (0,1000);
@@ -74,53 +77,53 @@ void Flight_Control::setup_m_rc(){
     m_pitch.servo_out = 0;
     m_yaw.servo_out = 0;
 }
-
+*/
 
 //Get & Set for PID controllers
-void Flight_Control::setRollPID(kPID rPid){
+void Flight_Control::setRollPID(gPID rPid){
 	this->rPid = rPid;
 	pid_roll.kP(rPid.P);	
 	pid_roll.kI(rPid.I);	
 	pid_roll.kD(rPid.D);	
 }
 
-kPID Flight_Control::getRollPID(){
+gPID Flight_Control::getRollPID(){
 	return this->rPid;
 }
 
-void Flight_Control::setPitchPID(kPID pPid){
+void Flight_Control::setPitchPID(gPID pPid){
 	this->pPid = pPid;
 	pid_pitch.kP(pPid.P);	
 	pid_pitch.kI(pPid.I);	
 	pid_pitch.kD(pPid.D);
 }
 
-kPID Flight_Control::getPitchPID(){
+gPID Flight_Control::getPitchPID(){
 	return this->pPid;
 }
 
-void Flight_Control::setYawPID(kPID yPid){
+void Flight_Control::setYawPID(gPID yPid){
 	this->yPid = yPid;
 	pid_yaw.kP(yPid.P);	
 	pid_yaw.kI(yPid.I);	
 	pid_yaw.kD(yPid.D);
 }
 
-kPID Flight_Control::getYawPID(){
+gPID Flight_Control::getYawPID(){
 	return this->yPid;
 }
 
 //Get & Set for Gyroscope Error Scale
 void Flight_Control::setGyrFactor(float f){
-	this->GyrErrScale = f;
+	this->gyrErrScale = f;
 }
 float Flight_Control::getGyrFactor(){
-	return this->GyrErrScale;
+	return this->gyrErrScale;
 }
 
 //Execute a single command, given an up vector, throttle value, and current yaw
 void Flight_Control::execute(Vector3f cntrl_up, float cntrl_throttle, float cntrl_yaw = 0){
-	up = up.normalized();
+	cntrl_up = cntrl_up.normalized();
 
     if(armed){
         motors.armed(true);
@@ -209,7 +212,7 @@ void Flight_Control::execute(Vector3f cntrl_up, float cntrl_throttle, float cntr
     // old_cntrl_up = cntrl_up;
     //    float d_cntrl_yaw = (cntrl_yaw - old_cntrl_yaw)/dt;
     // old_cntrl_yaw = cntrl_yaw;
-    Vector3f gyr_err = (gyr)*GyrErrScale;
+    Vector3f gyr_err = (gyr)*gyrErrScale;
     //TODO: consider adding a gyr_err  threshold value.
 
     //    if(counter==0){

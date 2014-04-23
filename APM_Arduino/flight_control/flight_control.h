@@ -32,11 +32,17 @@
 extern AP_HAL::HAL& hal;
 extern AP_InertialSensor_MPU6000 ins;
 
-struct kPID{
+struct gPID{
 	float P;
 	float I;
 	float D;
 	float Imax;
+	gPID(float p, float i, float d, float max){
+		P = p;
+		I = i;
+		D = d;
+		Imax = max;
+	}
 };
 
 enum DEBUG
@@ -61,47 +67,39 @@ public:
 	void arm(bool armed);
 	void execute(Vector3f cntrl_up, float cntrl_throttle, float cntrl_yaw = 0);
 
-	void setRollPID(kPID rPid);
-	kPID getRollPID();
-	void setPitchPID(kPID pPid);
-	kPID getPitchPID();
-	void setYawPID(kPID yPid);
-	kPID getYawPID();
+	void setRollPID(gPID rPid);
+	gPID getRollPID();
+	void setPitchPID(gPID pPid);
+	gPID getPitchPID();
+	void setYawPID(gPID yPid);
+	gPID getYawPID();
 
 	void setGyrFactor(int f);
 	int getGyrFactor();
 
 private:
 	bool armed;
-	RC_Channel m_roll(2), m_pitch(3), m_throttle(1), m_yaw(4);
-	AP_MotorsQuad motors(&m_roll,&m_pitch, &m_throttle, &m_yaw);
-	AC_PID* pid;
-	RangeFinder ultrasonic;
+	RC_Channel m_roll(uint8_t r = 2), m_pitch(uint8_t p = 3), m_throttle(uint8_t t = 1), m_yaw(uint8_t y = 4);
+	
+	AP_MotorsQuad motors(RC_Channel & m = &Flight_Control::m_roll, RC_Channel & p = &Flight_Control::m_pitch, RC_Channel & t = &Flight_Control::m_throttle, RC_Channel & y = &Flight_Control::m_yaw);
 
-	kPID rPid  = {0.125,0.00,0.008,4};
-	kPID pPid = {0.125,0.00,0.008,4};
-	kPID yPid   = {5.000,0.005,0.000,8};
+	gPID rPid (float p = 0.125, float i = 0.00, float d = 0.008, float m = 4);
+	gPID pPid (float p = 0.125, float i = 0.00, float d = 0.008, float m = 4);
+	gPID yPid (float p = 5.000, float i = 0.005, float d = 0.000, float m = 8);
+	gPID tPid (float p = 1.0, float i = 0.001, float d = 0.02, float m = 0.5);
 
-	AC_PID pid_roll     (rPid.P,rPid.I,rPid.D,rPid.Imax);
-	AC_PID pid_pitch    (pPid.P,pPid.I,pPid.D,pPid.Imax);
-	AC_PID pid_throttle (t_p,t_i,t_d,t_imax);
-	AC_PID pid_yaw      (yPid.P,yPid.I,yPid.D,yPid.Imax);
+	AC_PID pid_roll     (float p = rPid.P, float i = rPid.I, float d = rPid.D, float m = rPid.Imax);
+	AC_PID pid_pitch    (float p = pPid.P, float i = pPid.I, float d = pPid.D, float m = pPid.Imax);
+	AC_PID pid_throttle (float p = tPid.P, float i = tPid.I, float d = tPid.D, float m = tPid.Imax);
+	AC_PID pid_yaw      (float p = yPid.P, float i = yPid.I, float d = yPid.D, float m = yPid.Imax);
 
-    int gyrErrScale = 150;
+	int gyrErrScale;
 
-    int timestamp;
+	int timestamp;
 
-    static LowPassFilter2p filt_x(update_hz,cutout);
-	static LowPassFilter2p filt_y(update_hz,cutout);
-	static LowPassFilter2p filt_z(update_hz,cutout);
+	Vector3f acc_offset(float x = -.18, float y = .66, float z = 1.1);
 
-	float offset_acc[3]  = {-.105,.800,1.0};
-	Vector3f acc_offset(-.18, .66, 1.1);
-	float scale_acc[3]   = {1,1,1};
-	float offset_gyr[3]  = {-.001,-.0001,.0002};
-	float scale_gyr[3]   = {1,1,1};
-
-	int CNTRL_RANGE = 1000;
+	static const int CNTRL_RANGE = 1000;
 };
 
 #endif
