@@ -81,7 +81,7 @@ private:
 	bool armed;
 	RC_Channel m_roll(uint8_t r = 2), m_pitch(uint8_t p = 3), m_throttle(uint8_t t = 1), m_yaw(uint8_t y = 4);
 	
-	AP_MotorsQuad motors(RC_Channel & m = &Flight_Control::m_roll, RC_Channel & p = &Flight_Control::m_pitch, RC_Channel & t = &Flight_Control::m_throttle, RC_Channel & y = &Flight_Control::m_yaw);
+	AP_MotorsQuad motors(RC_Channel* m = &Flight_Control::m_roll, RC_Channel* p = &Flight_Control::m_pitch, RC_Channel* t = &Flight_Control::m_throttle, RC_Channel* y = &Flight_Control::m_yaw);
 
 	gPID rPid (float p = 0.125, float i = 0.00, float d = 0.008, float m = 4);
 	gPID pPid (float p = 0.125, float i = 0.00, float d = 0.008, float m = 4);
