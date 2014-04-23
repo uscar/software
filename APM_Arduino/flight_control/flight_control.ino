@@ -44,22 +44,20 @@ Flight_Control::Flight_Control(){
     motors.enable();
 
     //setup timing
-    t0 = timestamp = hal.scheduler->micros();
+    timestamp = hal.scheduler->micros();
 
     //kill the barometer
     hal.gpio->pinMode(40, GPIO_OUTPUT);
     hal.gpio->write(40,1);
 
     ///not the right place but it is a nice thought    
-    old_cntrl_up = cntrl_up;
-    old_cntrl_yaw = cntrl_yaw;
-
-
-	pid = new AC_PID (h_p, h_i, h_d, h_imax);
+/*  old_cntrl_up = cntrl_up;
+    old_cntrl_yaw = cntrl_yaw;*/
 }
 
 void Flight_Control::arm(bool armed){
 	this->armed = armed;
+    motors.arm(armed);
 }
 
 void Flight_Control::setup_m_rc(){
@@ -77,7 +75,7 @@ void Flight_Control::setup_m_rc(){
 }
 
 
-//Getters and Setters for PID controllers
+//Get & Set for PID controllers
 void Flight_Control::setRollPID(kPID rPid){
 	this->rPid = rPid;
 	pid_roll.kP(rPid.P);	
@@ -113,13 +111,14 @@ kPID Flight_Control::getYawPID(){
 
 //Get & Set for Gyroscope Error Scale
 void Flight_Control::setGyrFactor(float f){
-	this->GyrErrScale;
+	this->GyrErrScale = f;
 }
 float Flight_Control::getGyrFactor(){
 	return this->GyrErrScale;
 }
 
-void Flight_Control::execute(Vector3f up, float throttle, float yaw){
+//Execute a single command, given an up vector, throttle value, and current yaw
+void Flight_Control::execute(Vector3f cntrl_up, float cntrl_throttle, float cntrl_yaw = 0){
 	up = up.normalized();
 
     if(armed){
@@ -184,10 +183,10 @@ void Flight_Control::execute(Vector3f up, float throttle, float yaw){
     //normalize (length = 1)
     Vector3f down = filtered_acc.normalized(); // may break in free fall...
 
-    if(DEBUG_FILTER || DEBUG_ALL){
+    /*if(DEBUG_FILTER || DEBUG_ALL){
         if(counter == 0)
             hal.console->printf("down = %3.3f %3.3f %3.3f\n",down.x,down.y,down.z);
-    }
+    }*/
 
     Vector3f err = down + cntrl_up;
 
@@ -205,14 +204,11 @@ void Flight_Control::execute(Vector3f up, float throttle, float yaw){
     int throttle_actual = cntrl_throttle; //TODO: change this out with some f(height)
     int yaw_actual = (-1)*gyr.z*YAW_SCALE;                  //this may require some scaling
 
-
-    read_rc_inputs();
-
     //    Vector3f d_cntrl = (cntrl_up - old_cntrl_up)/dt;
-    old_cntrl_up = cntrl_up;
+    // old_cntrl_up = cntrl_up;
     //    float d_cntrl_yaw = (cntrl_yaw - old_cntrl_yaw)/dt;
-    old_cntrl_yaw = cntrl_yaw;
-    Vector3f gyr_err = (gyr)*GYR_ERR_SCALE;
+    // old_cntrl_yaw = cntrl_yaw;
+    Vector3f gyr_err = (gyr)*GyrErrScale;
     //TODO: consider adding a gyr_err  threshold value.
 
     //    if(counter==0){
@@ -233,21 +229,21 @@ void Flight_Control::execute(Vector3f up, float throttle, float yaw){
     int yaw_error      =  int_cntrl_yaw - yaw_actual;
     int pitch_pid_err  =  pid_pitch.get_pid(pitch_error,dt);
     int roll_pid_err   =  pid_roll.get_pid(roll_error,dt);
-    if(DEBUG_GYRERR || DEBUG_ALL){
+/*    if(DEBUG_GYRERR || DEBUG_ALL){
         if(counter == 0)
             hal.console->printf("gyr_err roll = %i pitch = %i\n",int((-1)*error_scale*gyr_err.x),int(error_scale*gyr_err.y));
     }
     if(DEBUG_ACCERR || DEBUG_ALL){
         if(counter == 0)
             hal.console->printf("acc_err roll = %04i pitch = %04i\n", error_scale*roll_pid_err,error_scale*pitch_pid_err);
-    }
+    }*/
     int r_correction = error_scale*(roll_pid_err - int(gyr_err.x));
     int p_correction = error_scale*(pitch_pid_err + int(gyr_err.y));
     int t_correction = error_scale*pid_throttle.get_pid(throttle_error,dt);
     int y_correction = error_scale*pid_yaw.get_pid(yaw_error,dt);
 
 
-    if(DEBUG_ACTUAL || DEBUG_ALL){
+/*    if(DEBUG_ACTUAL || DEBUG_ALL){
         if(counter == 0)
             hal.console->printf("actual: roll= %04i, pitch= %04i, throttle= %04i, yaw= %04i\n",roll_actual,pitch_actual,throttle_actual,yaw_actual);
     }
@@ -261,17 +257,17 @@ void Flight_Control::execute(Vector3f up, float throttle, float yaw){
     if(DEBUG_PID || DEBUG_ALL){
         if(counter == 0)
             hal.console->printf("correction: roll = %04i, pitch = %04i, throttle = %04i, yaw = %04i\n",r_correction,p_correction,t_correction,y_correction);
-    }
+    }*/
 
     int roll_out = int_cntrl_roll + r_correction;
     int pitch_out = int_cntrl_pitch - p_correction;
     int throttle_out = int_cntrl_throttle + t_correction;
     int yaw_out = int_cntrl_yaw - y_correction;
 
-    if(DEBUG_CNTRL || DEBUG_ALL){
+/*    if(DEBUG_CNTRL || DEBUG_ALL){
         if(counter == 0)
             hal.console->printf("out: roll = %04i, pitch = %04i, throttle = %04i, yaw = %04i\n",roll_out,pitch_out,throttle_out,yaw_out);
-    }
+    }*/
 
     //adjust motor outputs approrpiately for the pid term
     int roll_pulse = roll_out;
@@ -284,21 +280,21 @@ void Flight_Control::execute(Vector3f up, float throttle, float yaw){
     m_throttle.servo_out = throttle_pulse;
     m_yaw.servo_out = yaw_pulse;
 
-    if(DEBUG_PULSE || DEBUG_ALL){
+/*    if(DEBUG_PULSE || DEBUG_ALL){
         if(counter == 0){
             hal.console->printf("pulses roll=%4i pitch=%4i throttle=%4i yaw=%4i\n",roll_pulse,pitch_pulse,throttle_pulse,yaw_pulse);
         } 
     }
-
+*/
     motors.output();
-
+/*
     if(DEBUG_OUTPUT|| DEBUG_ALL){
         if(counter == 0){
             hal.console->printf("servo output roll= %04i, pitch= %04i, throttle= %04i, yaw= %04i\n",m_roll.servo_out, m_pitch.servo_out, m_throttle.servo_out,m_yaw.servo_out); 
             hal.console->printf("pwm   output roll= %04i, pitch= %04i, throttle= %04i, yaw= %04i\n",m_roll.pwm_out, m_pitch.pwm_out, m_throttle.pwm_out,m_yaw.pwm_out);    
         }
-    }
-    if(DEBUG_MOTOR || DEBUG_ALL){
+    }*/
+/*    if(DEBUG_MOTOR || DEBUG_ALL){
         if(counter == 0)
             hal.console->printf("motor one:%i two:%i three:%i four:%i\n",(int)motors.motor_out[0], (int)motors.motor_out[1], (int)motors.motor_out[2], (int)motors.motor_out[3]);
     }
@@ -309,5 +305,9 @@ void Flight_Control::execute(Vector3f up, float throttle, float yaw){
     if(DEBUG_PWM|| DEBUG_ALL){
         if(counter == 0)
             hal.console->printf("pwm roll:%i pitch:%i throttle:%i yaw:%i\n",(int)m_roll.servo_out, (int)m_pitch.servo_out, (int)m_throttle.servo_out, (int)m_yaw.servo_out);
-    }
+    }*/
+}
+
+void Flight_Control::DEBUG(int d){
+
 }
