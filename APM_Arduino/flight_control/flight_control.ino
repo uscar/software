@@ -23,6 +23,7 @@
 
 #include <PID.h> //pid controller
 #include <AC_PID.h>
+#include "flight_control.h"
 
 Flight_Control::Flight_Control(){
 	this->armed = false;

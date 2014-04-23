@@ -38,7 +38,6 @@ uses the radio_in
 
 //Custom tools
 #include "calibration.h"
-#include "printing.h"
 #include "flight_control.h"
 
 //board MUST be declared like this for libraries to function (they use extern)

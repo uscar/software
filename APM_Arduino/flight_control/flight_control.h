@@ -101,6 +101,7 @@ private:
 	float offset_gyr[3]  = {-.001,-.0001,.0002};
 	float scale_gyr[3]   = {1,1,1};
 
+	int CNTRL_RANGE = 1000;
 };
 
 #endif
