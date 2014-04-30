@@ -29,15 +29,15 @@
 
 #include <RangeFinder.h>
 
-extern AP_HAL::HAL& hal;
+extern const AP_HAL::HAL& hal;
 extern AP_InertialSensor_MPU6000 ins;
 
-struct gPID{
+struct kPID{
 	float P;
 	float I;
 	float D;
 	float Imax;
-	gPID(float p, float i, float d, float max){
+	kPID(float p, float i, float d, float max){
 		P = p;
 		I = i;
 		D = d;
@@ -67,15 +67,17 @@ public:
 	void arm(bool armed);
 	void execute(Vector3f cntrl_up, float cntrl_throttle, float cntrl_yaw = 0);
 
-	void setRollPID(gPID rPid);
-	gPID getRollPID();
-	void setPitchPID(gPID pPid);
-	gPID getPitchPID();
-	void setYawPID(gPID yPid);
-	gPID getYawPID();
+	void setRollPID(kPID rPid);
+	kPID getRollPID();
+	void setPitchPID(kPID pPid);
+	kPID getPitchPID();
+	void setYawPID(kPID yPid);
+	kPID getYawPID();
 
 	void setGyrFactor(int f);
 	int getGyrFactor();
+
+	void DEBUG(int d);
 
 private:
 	bool armed;
@@ -83,10 +85,10 @@ private:
 	
 	AP_MotorsQuad motors(RC_Channel* m = &Flight_Control::m_roll, RC_Channel* p = &Flight_Control::m_pitch, RC_Channel* t = &Flight_Control::m_throttle, RC_Channel* y = &Flight_Control::m_yaw);
 
-	gPID rPid (float p = 0.125, float i = 0.00, float d = 0.008, float m = 4);
-	gPID pPid (float p = 0.125, float i = 0.00, float d = 0.008, float m = 4);
-	gPID yPid (float p = 5.000, float i = 0.005, float d = 0.000, float m = 8);
-	gPID tPid (float p = 1.0, float i = 0.001, float d = 0.02, float m = 0.5);
+	kPID rPid (float p = 0.125, float i = 0.00, float d = 0.008, float m = 4);
+	kPID pPid (float p = 0.125, float i = 0.00, float d = 0.008, float m = 4);
+	kPID yPid (float p = 5.000, float i = 0.005, float d = 0.000, float m = 8);
+	kPID tPid (float p = 1.0, float i = 0.001, float d = 0.02, float m = 0.5);
 
 	AC_PID pid_roll     (float p = rPid.P, float i = rPid.I, float d = rPid.D, float m = rPid.Imax);
 	AC_PID pid_pitch    (float p = pPid.P, float i = pPid.I, float d = pPid.D, float m = pPid.Imax);

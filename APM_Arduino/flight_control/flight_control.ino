@@ -80,36 +80,36 @@ void Flight_Control::arm(bool armed){
 */
 
 //Get & Set for PID controllers
-void Flight_Control::setRollPID(gPID rPid){
+void Flight_Control::setRollPID(kPID rPid){
 	this->rPid = rPid;
 	pid_roll.kP(rPid.P);	
 	pid_roll.kI(rPid.I);	
 	pid_roll.kD(rPid.D);	
 }
 
-gPID Flight_Control::getRollPID(){
+kPID Flight_Control::getRollPID(){
 	return this->rPid;
 }
 
-void Flight_Control::setPitchPID(gPID pPid){
+void Flight_Control::setPitchPID(kPID pPid){
 	this->pPid = pPid;
 	pid_pitch.kP(pPid.P);	
 	pid_pitch.kI(pPid.I);	
 	pid_pitch.kD(pPid.D);
 }
 
-gPID Flight_Control::getPitchPID(){
+kPID Flight_Control::getPitchPID(){
 	return this->pPid;
 }
 
-void Flight_Control::setYawPID(gPID yPid){
+void Flight_Control::setYawPID(kPID yPid){
 	this->yPid = yPid;
 	pid_yaw.kP(yPid.P);	
 	pid_yaw.kI(yPid.I);	
 	pid_yaw.kD(yPid.D);
 }
 
-gPID Flight_Control::getYawPID(){
+kPID Flight_Control::getYawPID(){
 	return this->yPid;
 }
 
