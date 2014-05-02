@@ -43,7 +43,7 @@ void loop(void)
 {
     int16_t user_input;
 
-    hal.console->println();
+/*    hal.console->println();
     hal.console->println_P(PSTR(
     "Menu:\r\n"
     "    c) calibrate accelerometers\r\n"
@@ -74,16 +74,15 @@ void loop(void)
             run_level();
             display_offsets_and_scaling();
         }
-
-        if( user_input == 't' || user_input == 'T' ) {
-            run_test();
-        }
-
+*/
+        run_test();
+        
+/*
         if( user_input == 'r' || user_input == 'R' ) {
 			hal.scheduler->reboot(false);
         }
     }
-}
+*/}
 
 void run_calibration()
 {
@@ -151,14 +150,13 @@ void run_level()
     display_offsets_and_scaling();
 }
 
-
 void run_test()
 {
     Vector3f accel;
     Vector3f prev_accel;
 
     
-    float lenA, Gtotal = 0, gravity = 0, mill=0, acc = 0,
+    float lenA, Gtotal = 0, gravity = 0, mill=0, acc = 0, P_A = 0,
           Vtotal = 0, time = 0, num = 0, V_last = 0, same = 0;
 	uint8_t counter = 0;
 
@@ -206,11 +204,15 @@ void run_test()
            if(lenA != 0)
            {
              time += mill;
-             if(time < 10000)
+             if(time < 2000)
              {
                Gtotal = lenA + Gtotal;
                ++num;
                gravity = Gtotal / num;
+               if(P_A == 0)
+                 P_A = gravity;
+               if(gravity - P_A > 0.2 || gravity - P_A < -0.2)
+                 break;
              }  
              
              // Deal with negative value
@@ -218,7 +220,7 @@ void run_test()
                lenA = -1*lenA;
              acc = lenA - gravity;
              
-             if(acc > 0.5 || acc < -0.5) // evaluates velocity
+             if(acc > 0.2 || acc < -0.2) // evaluates velocity
                Vtotal = (acc*mill/1000) + Vtotal;
                
               if(Vtotal == V_last && Vtotal != 0)
@@ -245,6 +247,5 @@ void run_test()
         hal.console->read();
     }
 }
-
 
 AP_HAL_MAIN();
