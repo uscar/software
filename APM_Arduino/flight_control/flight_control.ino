@@ -23,33 +23,48 @@
 
 #include <PID.h> //pid controller
 #include <AC_PID.h>
+
 #include "flight_control.h"
 
-Flight_Control::Flight_Control(){
+Flight_Control::Flight_Control() : rPid(R_P, R_I, R_D, R_IMAX), 
+                                   pPid(P_P, P_I, P_D, P_IMAX),
+                                   tPid(T_P, T_I, T_D, T_IMAX),
+                                   yPid(Y_P, Y_I, Y_D, Y_IMAX),
+                                   acc_offset(ACC_OFFSET_X, ACC_OFFSET_Y, ACC_OFFSET_Z) {
+    m_roll = new RC_Channel(2);
+    m_pitch = new RC_Channel(3);
+    m_throttle = new RC_Channel(1);
+    m_yaw = new RC_Channel(4);
+    motors = new AP_MotorsQuad(m_roll, m_pitch, m_throttle, m_yaw);
     setGyrFactor(150);
-
+    
     // m_roll = new RC_Channel(2);
     // m_pitch = new RC_Channel(3);
     // m_throttle = new RC_Channel(1);
     // m_yaw = new RC_Channel(4);
     // motors = new AP_MotorsQuad(Flight_Control::m_roll, Flight_Control::m_pitch, Flight_Control::m_throttle, Flight_Control::m_yaw);
-    this->armed = false;
+    arm(false);
     ins.init(AP_InertialSensor::COLD_START,AP_InertialSensor::RATE_100HZ);
 
 // HAL will start serial port at 115200.
     hal.console->println_P(PSTR("Starting!"));
 
 //defines the mapping system from RC command to motor effect (defined in quad)
-    motors.set_frame_orientation(AP_MOTORS_X_FRAME);//motors.set_frame_orientation(AP_MOTORS_H_FRAME);
+    motors->set_frame_orientation(AP_MOTORS_X_FRAME);//motors.set_frame_orientation(AP_MOTORS_H_FRAME);
 //motors.min_throttle is in terms of servo values not output values.
 
 //setup rc
     //setup_m_rc();
+    //setup PID Control
+    setRollPID(rPid);
+    setPitchPID(pPid);
+    setThrottlePID(tPid);
+    setYawPID(yPid);
 
     //setup motors
-    motors.Init();
-    motors.set_update_rate(500);
-    motors.enable();
+    motors->Init();
+    motors->set_update_rate(500);
+    motors->enable();
 
     //setup timing
     timestamp = hal.scheduler->micros();
@@ -60,8 +75,8 @@ Flight_Control::Flight_Control(){
 }
 
 void Flight_Control::arm(bool armed){
-	this->armed = armed;
-    motors.armed(armed);
+    this->armed = armed;
+    motors->armed(armed);
 }
 
 /*void Flight_Control::setup_m_rc(){
@@ -79,40 +94,6 @@ void Flight_Control::arm(bool armed){
 }
 */
 
-//Get & Set for PID controllers
-void Flight_Control::setRollPID(kPID rPid){
-	this->rPid = rPid;
-	pid_roll.kP(rPid.P);	
-	pid_roll.kI(rPid.I);	
-	pid_roll.kD(rPid.D);	
-}
-
-kPID Flight_Control::getRollPID(){
-	return this->rPid;
-}
-
-void Flight_Control::setPitchPID(kPID pPid){
-	this->pPid = pPid;
-	pid_pitch.kP(pPid.P);	
-	pid_pitch.kI(pPid.I);	
-	pid_pitch.kD(pPid.D);
-}
-
-kPID Flight_Control::getPitchPID(){
-	return this->pPid;
-}
-
-void Flight_Control::setYawPID(kPID yPid){
-	this->yPid = yPid;
-	pid_yaw.kP(yPid.P);	
-	pid_yaw.kI(yPid.I);	
-	pid_yaw.kD(yPid.D);
-}
-
-kPID Flight_Control::getYawPID(){
-	return this->yPid;
-}
-
 //Get & Set for Gyroscope Error Scale
 void Flight_Control::setGyrFactor(float f){
 	this->gyrErrScale = f;
@@ -122,15 +103,10 @@ float Flight_Control::getGyrFactor(){
 }
 
 //Execute a single command, given an up vector, throttle value, and current yaw
-void Flight_Control::execute(Vector3f cntrl_up, float cntrl_throttle, float cntrl_yaw = 0){
-	cntrl_up = cntrl_up.normalized();
+void Flight_Control::execute(Vector3f& cntrl_up, float cntrl_throttle, float cntrl_yaw){
+    if(!armed) return;
 
-    if(armed){
-        motors.armed(true);
-    }
-    else{
-        motors.armed(false);
-    }
+    cntrl_up = cntrl_up.normalized();
 
     //update the time locks/ time updates
     int t = hal.scheduler->micros();
@@ -231,8 +207,8 @@ void Flight_Control::execute(Vector3f cntrl_up, float cntrl_throttle, float cntr
     int pitch_error    =  err.x*CNTRL_RANGE ;
     int throttle_error =  cntrl_throttle - throttle_actual;
     int yaw_error      =  int_cntrl_yaw - yaw_actual;
-    int pitch_pid_err  =  pid_pitch.get_pid(pitch_error,dt);
-    int roll_pid_err   =  pid_roll.get_pid(roll_error,dt);
+    int pitch_pid_err  =  pid_pitch->get_pid(pitch_error,dt);
+    int roll_pid_err   =  pid_roll->get_pid(roll_error,dt);
 /*    if(DEBUG_GYRERR || DEBUG_ALL){
         if(counter == 0)
             hal.console->printf("gyr_err roll = %i pitch = %i\n",int((-1)*error_scale*gyr_err.x),int(error_scale*gyr_err.y));
@@ -243,8 +219,8 @@ void Flight_Control::execute(Vector3f cntrl_up, float cntrl_throttle, float cntr
     }*/
     int r_correction = error_scale*(roll_pid_err - int(gyr_err.x));
     int p_correction = error_scale*(pitch_pid_err + int(gyr_err.y));
-    int t_correction = error_scale*pid_throttle.get_pid(throttle_error,dt);
-    int y_correction = error_scale*pid_yaw.get_pid(yaw_error,dt);
+    int t_correction = error_scale*pid_throttle->get_pid(throttle_error,dt);
+    int y_correction = error_scale*pid_yaw->get_pid(yaw_error,dt);
 
 
 /*    if(DEBUG_ACTUAL || DEBUG_ALL){
@@ -279,10 +255,10 @@ void Flight_Control::execute(Vector3f cntrl_up, float cntrl_throttle, float cntr
     int throttle_pulse = throttle_out;
     int yaw_pulse = yaw_out;
 
-    m_roll.servo_out = roll_pulse;
-    m_pitch.servo_out = pitch_pulse;
-    m_throttle.servo_out = throttle_pulse;
-    m_yaw.servo_out = yaw_pulse;
+    m_roll->servo_out = roll_pulse;
+    m_pitch->servo_out = pitch_pulse;
+    m_throttle->servo_out = throttle_pulse;
+    m_yaw->servo_out = yaw_pulse;
 
 /*    if(DEBUG_PULSE || DEBUG_ALL){
         if(counter == 0){
@@ -290,7 +266,7 @@ void Flight_Control::execute(Vector3f cntrl_up, float cntrl_throttle, float cntr
         } 
     }
 */
-    motors.output();
+    motors->output();
 /*
     if(DEBUG_OUTPUT|| DEBUG_ALL){
         if(counter == 0){
@@ -312,6 +288,6 @@ void Flight_Control::execute(Vector3f cntrl_up, float cntrl_throttle, float cntr
     }*/
 }
 
-void Flight_Control::DEBUG(int d){
+void Flight_Control::debug(int d){
 
 }

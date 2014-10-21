@@ -2,29 +2,12 @@
 //for the uncovered board//
 ///////////////////////////
 
-
-
-//IMU consts
-
-float offset_acc[3]  = {-.105,.800,1.0};
-Vector3f acc_offset(-.18, .66, 1.1);
-float scale_acc[3]   = {1,1,1};
-float offset_gyr[3]  = {-.001,-.0001,.0002};
-float scale_gyr[3]   = {1,1,1};
-
-
 //Remote bounds
 
 #define REMOTE_MAX 1900
 #define REMOTE_MIN 1100
 #define REMOTE_TRIM 1500
 
-#define t_p    1.0
-#define t_i    0.001
-#define t_d    0.02
-#define t_imax 0.5
-
-#define error_scale 1
 //was .5
 
 //low pass filter
@@ -68,14 +51,10 @@ float scale_gyr[3]   = {1,1,1};
 #define MOTOR_HOVER 1400
 
 //how much is yaw rate weighted relative to acc.
-#define YAW_SCALE 100
-
 
 #define RPY_RC_MIN 1100
 #define RPY_RC_MAX 1900
 #define RPY_RC_TRIM 1500
 
-//the dynamic range given (zeor to max, min to zero) for cntrl values
-#define CNTRL_RANGE 1000
 //the z componenet of the to-be normalized control vector (a large value dampens controller effect)
 #define CNTRL_Z_COMP 3

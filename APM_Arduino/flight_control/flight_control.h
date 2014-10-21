@@ -29,79 +29,91 @@
 
 #include <RangeFinder.h>
 
+#include "constants.h"
+
 extern const AP_HAL::HAL& hal;
 extern AP_InertialSensor_MPU6000 ins;
 
-struct kPID{
-	float P;
-	float I;
-	float D;
-	float Imax;
-	kPID(float p, float i, float d, float max){
-		P = p;
-		I = i;
-		D = d;
-		Imax = max;
-	}
+struct kPID {
+  float P;
+  float I;
+  float D;
+  float Imax;
+
+  kPID(float p, float i, float d, float max) {
+    P = p;
+    I = i;
+    D = d;
+    Imax = max;
+  }
 };
 
 enum DEBUG
 {
-	DEBUG_ALL,
-	DEBUG_GYRERR,
-	DEBUG_ACCERR,
-	DEBUG_ACTUAL,
-	DEBUG_CONTROL,
-	DEBUG_PID,
-	DEBUG_CNTRL,
-	DEBUG_PULSE,
-	DEBUG_OUTPUT,
-	DEBUG_MOTOR,
-	DEBUG_ENABLE,
-	DEBUG_PWM
+  DEBUG_ALL,
+  DEBUG_GYRERR,
+  DEBUG_ACCERR,
+  DEBUG_ACTUAL,
+  DEBUG_CONTROL,
+  DEBUG_PID,
+  DEBUG_CNTRL,
+  DEBUG_PULSE,
+  DEBUG_OUTPUT,
+  DEBUG_MOTOR,
+  DEBUG_ENABLE,
+  DEBUG_PWM
 };
 
 class Flight_Control {
 public:
-	Flight_Control();
-	void arm(bool armed);
-	void execute(Vector3f cntrl_up, float cntrl_throttle, float cntrl_yaw = 0);
+  Flight_Control();
+  
+  ~Flight_Control() {
+    delete m_roll;
+    delete m_pitch;
+    delete m_throttle;
+    delete m_yaw;
+    delete motors;
+    delete pid_roll;
+    delete pid_pitch;
+    delete pid_throttle;
+    delete pid_yaw;
+  }
+  void arm(bool armed);
+  void execute(Vector3f& cntrl_up, float cntrl_throttle, float cntrl_yaw = 0);
 
-	void setRollPID(kPID rPid);
-	kPID getRollPID();
-	void setPitchPID(kPID pPid);
-	kPID getPitchPID();
-	void setYawPID(kPID yPid);
-	kPID getYawPID();
+  void setRollPID(kPID& rPid) { setACPid(pid_roll, rPid); }
+  kPID getRollPID() { return rPid; }
+  void setPitchPID(kPID& pPid) { setACPid(pid_pitch, pPid); }
+  kPID getPitchPID() { return pPid; }
+  void setThrottlePID(kPID& tPid) { setACPid(pid_throttle, tPid); }
+  kPID getThrottlePID() { return tPid; }
+  void setYawPID(kPID& yPid) { setACPid(pid_yaw, yPid); }
+  kPID getYawPID() { return yPid; }
 
-	void setGyrFactor(int f);
-	int getGyrFactor();
+  void setGyrFactor(float f);
+  float getGyrFactor();
 
-	void DEBUG(int d);
+  void debug(int d);
 
 private:
-	bool armed;
-	RC_Channel m_roll(uint8_t r = 2), m_pitch(uint8_t p = 3), m_throttle(uint8_t t = 1), m_yaw(uint8_t y = 4);
-	
-	AP_MotorsQuad motors(RC_Channel* m = &Flight_Control::m_roll, RC_Channel* p = &Flight_Control::m_pitch, RC_Channel* t = &Flight_Control::m_throttle, RC_Channel* y = &Flight_Control::m_yaw);
-
-	kPID rPid (float p = 0.125, float i = 0.00, float d = 0.008, float m = 4);
-	kPID pPid (float p = 0.125, float i = 0.00, float d = 0.008, float m = 4);
-	kPID yPid (float p = 5.000, float i = 0.005, float d = 0.000, float m = 8);
-	kPID tPid (float p = 1.0, float i = 0.001, float d = 0.02, float m = 0.5);
-
-	AC_PID pid_roll     (float p = rPid.P, float i = rPid.I, float d = rPid.D, float m = rPid.Imax);
-	AC_PID pid_pitch    (float p = pPid.P, float i = pPid.I, float d = pPid.D, float m = pPid.Imax);
-	AC_PID pid_throttle (float p = tPid.P, float i = tPid.I, float d = tPid.D, float m = tPid.Imax);
-	AC_PID pid_yaw      (float p = yPid.P, float i = yPid.I, float d = yPid.D, float m = yPid.Imax);
-
-	int gyrErrScale;
-
-	int timestamp;
-
-	Vector3f acc_offset(float x = -.18, float y = .66, float z = 1.1);
-
-	static const int CNTRL_RANGE = 1000;
+  void setACPid(AC_PID* ac_pid, kPID& pid) {
+    ac_pid->kP(pid.P); 
+    ac_pid->kI(pid.I); 
+    ac_pid->kD(pid.D); 
+  }
+  
+  bool armed;
+  RC_Channel *m_roll, *m_pitch, *m_throttle, *m_yaw;
+  AP_MotorsQuad* motors;
+  
+  kPID rPid, pPid, yPid, tPid; 
+  AC_PID *pid_roll, *pid_pitch, *pid_throttle, *pid_yaw;
+  
+  float gyrErrScale;
+  int timestamp;
+  
+  Vector3f acc_offset;
 };
 
 #endif

@@ -46,31 +46,14 @@ const AP_HAL::HAL& hal = AP_HAL_AVR_APM2;
 AP_InertialSensor_MPU6000 ins;
 
 //setup the filters for removing noise from acc.
-static LowPassFilter2p filt_x(update_hz,cutout);
-static LowPassFilter2p filt_y(update_hz,cutout);
-static LowPassFilter2p filt_z(update_hz,cutout);
-
-//set up the PID calculators with the hard coded values
-AC_PID pid_roll     (r_p,r_i,r_d,r_imax);
-AC_PID pid_pitch    (p_p,p_i,p_d,p_imax);
-AC_PID pid_throttle (t_p,t_i,t_d,t_imax);
-AC_PID pid_yaw      (y_p,y_i,y_d,y_imax);
-
-//needed by the AP_Motors type to define inputs
-RC_Channel m_roll(2), m_pitch(3), m_throttle(1), m_yaw(4);
 
 //vector command storage
 Vector3f cntrl_up;
-Vector3f old_cntrl_up;
 
 //non-vector command storage
 float cntrl_yaw;
 float old_cntrl_yaw;
 int cntrl_throttle;
-
-//motors abstractions handles the mapping of command to motor output
-//CAREFULL -> the motors use the pwm in value not the mapped value.
-AP_MotorsQuad motors(&m_roll,&m_pitch,&m_throttle,&m_yaw);
 
 //used for calculating update rate, time elapsed etc
 int timestamp;
@@ -112,22 +95,6 @@ int lin_map(int value, int min_v, int max_v, int min_o, int max_o){
     return (int)((value-min_v)*((float)(max_o-min_o)/(float)(max_v-min_v))+min_o);
 }
 
-void setup_m_rc(){
-
-    //setting to less than 1000 scales up control effect
-    m_throttle.set_range(0,1000);//should be 1000 probs.
-    m_roll.set_range    (0,1000);
-    m_pitch.set_range   (0,1000);
-    m_yaw.set_range     (0,1000);
-
-    m_throttle.radio_min = 1000;
-    m_throttle.radio_max = 2200;
-
-    m_roll.servo_out = 0;
-    m_pitch.servo_out = 0;
-    m_yaw.servo_out = 0;
-}
-
 //called once on reset
 void setup(void)
 {
@@ -146,41 +113,8 @@ void loop(void){
     else{
         flight_control->arm(false);
     }
-
-    //update the time locks/ time updates
-
-    //get new instrument measurement
-    /*
-       if(hal.console->available()){
-       char c = hal.console->read();
-       char d = hal.console->read();
-       if(d == '='){
-       if(c == 'p'){
-       float kp;
-       hal.console->scan("%f",&kp);
-       pid_roll.kP(kp);
-       pid_pitch.kP(kp);
-       }
-       if(c == 'd'){
-       float kd = hal.console->parseFloat();
-       pid_roll.kD(kd);
-       pid_pitch.kD(kd);
-       }
-       if(c == 'i'){
-       float ki = hal.console->parseFloat();
-       pid_roll.kI(ki);
-       pid_pitch.kI(ki);
-       }
-       }
-       while(hal.console->available()){
-       hal.console->read();
-       }
-       }
-     */
-    //compute the control value coresponding to current IMU output
-    //should be scaled to -100 -> 100 for now
-    
     read_rc_inputs();
+    
     flight_control->execute(cntrl_up, cntrl_throttle, cntrl_yaw);
     //TODO:provide user interface for calibrating the accelerometer
     //also same thing for pid stuff
