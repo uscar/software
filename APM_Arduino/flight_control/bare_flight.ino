@@ -60,9 +60,10 @@ int timestamp;
 int t0;
 int counter = 0;
 
-int  armed;
+bool  armed;
 //reads remote control inputs and sets c vals
 Flight_Control* flight_control;
+
 void read_rc_inputs(){
 
     int roll        = hal.rcin->read(CH_1);

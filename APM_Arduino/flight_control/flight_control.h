@@ -40,12 +40,7 @@ struct kPID {
   float D;
   float Imax;
 
-  kPID(float p, float i, float d, float max) {
-    P = p;
-    I = i;
-    D = d;
-    Imax = max;
-  }
+  kPID(float p, float i, float d, float max) : P(p), I(i), D(d), Imax(max) { }
 };
 
 enum DEBUG
