@@ -85,7 +85,7 @@ void loop()
     int value;
 
     // display help
-    hal.console->println("Press 't' to test motors.  Be careful they will spin!");
+    hal.console->println("\nPress 't' to test motors.  Be careful they will spin! \nPress 'n' to test nam\nPress 'b' to do something\nPress 'q' to quit");
 
     // wait for user to enter something
     while( !hal.console->available() ) {
@@ -103,7 +103,7 @@ void loop()
         motors.armed(false);
         hal.console->println("finished test.");
     }
-    if( value == 'n'){
+    if( value == 'n' || value == 'N'){
        hal.console->println("testing nam");
        motors.armed(true);
       for(int i = 0;i<500;i++){
@@ -125,7 +125,7 @@ void loop()
        motors.armed(false);
        hal.console->println("done"); 
     }
-    if(value == 'b'){
+    if(value == 'b' || value == 'B'){
       for(int i = 1150;i<2000;i+=10){
           hal.rcout->write(CH_1,i);
           hal.rcout->write(CH_3,i);
@@ -135,6 +135,11 @@ void loop()
       hal.scheduler->delay(500);
       hal.rcout->write(CH_1,0);
       hal.rcout->write(CH_3,0);
+    }
+    if(value == 'q' || value == 'Q'){
+       motors.armed(false);
+       exit(1); 
+       hal.console->println("Program Quit");
     }
 }
 
