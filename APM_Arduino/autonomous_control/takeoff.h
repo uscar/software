@@ -16,6 +16,7 @@ public:
 
   float curr_height() { return curr_height_; }
   void set_curr_height(float curr_height) { curr_height_ = curr_height; }
+  Vector3f& up_cmd() { return up_cmd_; }
 
 private:
   float curr_height_;

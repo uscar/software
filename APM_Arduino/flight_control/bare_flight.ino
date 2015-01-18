@@ -60,68 +60,66 @@ int timestamp;
 int t0;
 int counter = 0;
 
-bool  armed;
+bool armed;
 //reads remote control inputs and sets c vals
 Flight_Control* flight_control;
 
 void read_rc_inputs(){
 
-    int roll        = hal.rcin->read(CH_1);
-    int pitch       = hal.rcin->read(CH_2);
-    int throttle    = hal.rcin->read(CH_3);
-    int yaw         = hal.rcin->read(CH_4);
+  int roll        = hal.rcin->read(CH_1);
+  int pitch       = hal.rcin->read(CH_2);
+  int throttle    = hal.rcin->read(CH_3);
+  int yaw         = hal.rcin->read(CH_4);
 
-    if (yaw < REMOTE_MIN + 50 && throttle < REMOTE_MIN +50){
-        armed = true;
-    }
-    if (yaw > REMOTE_MAX - 50 && throttle < REMOTE_MIN+50){
-        armed = false;
-    }
+  if (yaw < REMOTE_MIN + 50 && throttle < REMOTE_MIN +50){
+    armed = true;
+  }
+
+  if (yaw > REMOTE_MAX - 50 && throttle < REMOTE_MIN+50){
+    armed = false;
+  }
 
 
-    float range = REMOTE_MAX-REMOTE_MIN;
+  float range = REMOTE_MAX-REMOTE_MIN;
 
     //calculate control value from input value
-    cntrl_up.x = (INV_PITCH?-1:1)*(pitch - REMOTE_TRIM)*2.0/range;
-    cntrl_up.y = (INV_ROLL?-1:1)*(roll - REMOTE_TRIM)*2.0/range;
-    cntrl_up.z = CNTRL_Z_COMP; //dampens the control.
+  cntrl_up.x = (INV_PITCH?-1:1)*(pitch - REMOTE_TRIM)*2.0/range;
+  cntrl_up.y = (INV_ROLL?-1:1)*(roll - REMOTE_TRIM)*2.0/range;
+  cntrl_up.z = CNTRL_Z_COMP; //dampens the control.
 
-    cntrl_up = cntrl_up.normalized();
-    cntrl_yaw  = (INV_YAW?-1:1)*(yaw - REMOTE_TRIM)*2.0/range;
-    cntrl_throttle = (throttle - REMOTE_MIN);
+  cntrl_up = cntrl_up.normalized();
+  cntrl_yaw  = (INV_YAW?-1:1)*(yaw - REMOTE_TRIM)*2.0/range;
+  cntrl_throttle = (throttle - REMOTE_MIN);
 }   
 
 //linearly maps a value within one range to another range
-int lin_map(int value, int min_v, int max_v, int min_o, int max_o){
-    return (int)((value-min_v)*((float)(max_o-min_o)/(float)(max_v-min_v))+min_o);
+int lin_map(int value, int min_v, int max_v, int min_o, int max_o) {
+  return (int)((value-min_v)*((float)(max_o-min_o)/(float)(max_v-min_v))+min_o);
 }
 
 //called once on reset
-void setup(void)
-{
-    flight_control = new Flight_Control();
-    flight_control->arm(true);
+void setup(void) {
+  flight_control = new Flight_Control();
+  flight_control->arm(true);
 }
 
 //called iteratively
-void loop(void){
-    //for periodic outputs
-    counter++;
-    counter %= 50;
-    if(armed){
-        flight_control->arm(true);
-    }
-    else{
-        flight_control->arm(false);
-    }
-    read_rc_inputs();
-    
-    flight_control->execute(cntrl_up, cntrl_throttle, cntrl_yaw);
-    //TODO:provide user interface for calibrating the accelerometer
-    //also same thing for pid stuff
+void loop(void) {
+  //for periodic outputs
+  counter++;
+  counter %= 50;
+  if(armed) {
+    flight_control->arm(true);
+  }
+  else {
+    flight_control->arm(false);
+  }
+  read_rc_inputs();
+  
+  flight_control->execute(cntrl_up, cntrl_throttle, cntrl_yaw);
+  //TODO:provide user interface for calibrating the accelerometer
+  //also same thing for pid stuff
 }
 
-
-
 //calls setup and loop appropriately
-AP_HAL_MAIN();
+  AP_HAL_MAIN();
