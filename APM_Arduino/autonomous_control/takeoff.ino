@@ -1,13 +1,15 @@
 #include "takeoff.h"
-#include <Vector3f>
-
-extern AP_InertialSensor_MPU6000 ins;
-extern const AP_HAL::HAL& hal;
 
 bool Takeoff::ExecuteCycle() {
+  set_curr_height(baro.get_altitude());
   if(curr_height() < END_HEIGHT) {
-    flight_control()->execute(up_cmd(), 1, 0);
+    flight_control()->execute(up_cntrl(), CalculateThrust(), 0);
     return false;
   }
   else return true;
+}
+
+/** TODO: Calculate necessary thrust value from current height **/ 
+int Takeoff::CalculateThrust() {
+  return 1;
 }

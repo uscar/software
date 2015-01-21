@@ -79,7 +79,6 @@ void read_rc_inputs(){
     armed = false;
   }
 
-
   float range = REMOTE_MAX-REMOTE_MIN;
 
     //calculate control value from input value

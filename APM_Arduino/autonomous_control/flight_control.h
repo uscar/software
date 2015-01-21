@@ -43,21 +43,21 @@ struct kPID {
   kPID(float p, float i, float d, float max) : P(p), I(i), D(d), Imax(max) { }
 };
 
-enum DEBUG
-{
-  DEBUG_ALL,
-  DEBUG_GYRERR,
-  DEBUG_ACCERR,
-  DEBUG_ACTUAL,
-  DEBUG_CONTROL,
-  DEBUG_PID,
-  DEBUG_CNTRL,
-  DEBUG_PULSE,
-  DEBUG_OUTPUT,
-  DEBUG_MOTOR,
-  DEBUG_ENABLE,
-  DEBUG_PWM
-};
+// enum kDebug
+// {
+//   DEBUG_ALL,
+//   DEBUG_GYRERR,
+//   DEBUG_ACCERR,
+//   DEBUG_ACTUAL,
+//   DEBUG_CONTROL,
+//   DEBUG_PID,
+//   DEBUG_CNTRL,
+//   DEBUG_PULSE,
+//   DEBUG_OUTPUT,
+//   DEBUG_MOTOR,
+//   DEBUG_ENABLE,
+//   DEBUG_PWM
+// }
 
 class Flight_Control {
 public:
@@ -78,18 +78,19 @@ public:
   void execute(Vector3f& cntrl_up, float cntrl_throttle, float cntrl_yaw = 0);
 
   void setRollPID(kPID& rPid) { setACPid(pid_roll, rPid); }
-  kPID getRollPID() { return rPid; }
+  kPID& getRollPID() { return rPid; }
   void setPitchPID(kPID& pPid) { setACPid(pid_pitch, pPid); }
-  kPID getPitchPID() { return pPid; }
+  kPID& getPitchPID() { return pPid; }
   void setThrottlePID(kPID& tPid) { setACPid(pid_throttle, tPid); }
-  kPID getThrottlePID() { return tPid; }
+  kPID& getThrottlePID() { return tPid; }
   void setYawPID(kPID& yPid) { setACPid(pid_yaw, yPid); }
-  kPID getYawPID() { return yPid; }
+  kPID& getYawPID() { return yPid; }
 
   void setGyrFactor(float f);
   float getGyrFactor();
 
   void debug(int d);
+  const bool is_armed() const { return armed; }
 
 private:
   void setACPid(AC_PID* ac_pid, kPID& pid) {

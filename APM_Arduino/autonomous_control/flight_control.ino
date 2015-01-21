@@ -27,51 +27,51 @@
 #include "flight_control.h"
 
 Flight_Control::Flight_Control() : rPid(R_P, R_I, R_D, R_IMAX), 
-                                   pPid(P_P, P_I, P_D, P_IMAX),
-                                   tPid(T_P, T_I, T_D, T_IMAX),
-                                   yPid(Y_P, Y_I, Y_D, Y_IMAX),
-                                   acc_offset(ACC_OFFSET_X, ACC_OFFSET_Y, ACC_OFFSET_Z) {
-    m_roll = new RC_Channel(2);
-    m_pitch = new RC_Channel(3);
-    m_throttle = new RC_Channel(1);
-    m_yaw = new RC_Channel(4);
-    motors = new AP_MotorsQuad(m_roll, m_pitch, m_throttle, m_yaw);
-    setGyrFactor(150);
-    
-    arm(false);
-    ins.init(AP_InertialSensor::COLD_START, AP_InertialSensor::RATE_100HZ);
+                        pPid(P_P, P_I, P_D, P_IMAX),
+                        tPid(T_P, T_I, T_D, T_IMAX),
+                        yPid(Y_P, Y_I, Y_D, Y_IMAX),
+                        acc_offset(ACC_OFFSET_X, ACC_OFFSET_Y, ACC_OFFSET_Z) {
+  m_roll = new RC_Channel(2);
+  m_pitch = new RC_Channel(3);
+  m_throttle = new RC_Channel(1);
+  m_yaw = new RC_Channel(4);
+  motors = new AP_MotorsQuad(m_roll, m_pitch, m_throttle, m_yaw);
+  setGyrFactor(150);
+
+  arm(false);
+  ins.init(AP_InertialSensor::COLD_START, AP_InertialSensor::RATE_100HZ);
 
 // HAL will start serial port at 115200.
-    hal.console->println_P(PSTR("Starting!"));
+  hal.console->println_P(PSTR("Starting!"));
 
 //defines the mapping system from RC command to motor effect (defined in quad)
-    motors->set_frame_orientation(AP_MOTORS_X_FRAME);//motors.set_frame_orientation(AP_MOTORS_H_FRAME);
+  motors->set_frame_orientation(AP_MOTORS_H_FRAME);//motors.set_frame_orientation(AP_MOTORS_H_FRAME);
 //motors.min_throttle is in terms of servo values not output values.
 
 //setup rc
-    //setup_m_rc();
-    //setup PID Control
-    setRollPID(rPid);
-    setPitchPID(pPid);
-    setThrottlePID(tPid);
-    setYawPID(yPid);
+  //setup_m_rc();
+  //setup PID Control
+  setRollPID(rPid);
+  setPitchPID(pPid);
+  setThrottlePID(tPid);
+  setYawPID(yPid);
 
-    //setup motors
-    motors->Init();
-    motors->set_update_rate(500);
-    motors->enable();
+  //setup motors
+  motors->Init();
+  motors->set_update_rate(500);
+  motors->enable();
 
-    //setup timing
-    timestamp = hal.scheduler->micros();
+  //setup timing
+  timestamp = hal.scheduler->micros();
 
-    //kill the barometer
-    hal.gpio->pinMode(40, GPIO_OUTPUT);
-    hal.gpio->write(40,1);
+  //kill the barometer
+  hal.gpio->pinMode(40, GPIO_OUTPUT);
+  hal.gpio->write(40,1);
 }
 
 void Flight_Control::arm(bool armed){
-    this->armed = armed;
-    motors->armed(armed);
+  this->armed = armed;
+  motors->armed(armed);
 }
 
 /*void Flight_Control::setup_m_rc(){
@@ -99,24 +99,27 @@ float Flight_Control::getGyrFactor(){
 
 //Execute a single command, given an up vector, throttle value, and current yaw
 void Flight_Control::execute(Vector3f& cntrl_up, float cntrl_throttle, float cntrl_yaw){
-    if(!armed) return;
+  if(!armed) {
+    motors->output_min();
+    return;
+  }
 
-    cntrl_up = cntrl_up.normalized();
+  cntrl_up = cntrl_up.normalized();
 
     //update the time locks/ time updates
-    int t = hal.scheduler->micros();
-    float dt = (t - timestamp)/1000.0;
-    timestamp = t;
+  int t = hal.scheduler->micros();
+  float dt = (t - timestamp)/1000.0;
+  timestamp = t;
 
 
     //get new instrument measurement
-    ins.update();
-    
+  ins.update();
+
     //compute the control value corresponding to current IMU output
     //should be scaled to -100 -> 100 for now
-    Vector3f acc = ins.get_accel() - acc_offset;
-    Vector3f gyr = ins.get_gyro();
-    Vector3f filtered_acc;
+  Vector3f acc = ins.get_accel() - acc_offset;
+  Vector3f gyr = ins.get_gyro();
+  Vector3f filtered_acc;
 
     //apply a low pass filter    
    // filtered_acc.x = filt_x.apply(acc.x);
@@ -124,9 +127,9 @@ void Flight_Control::execute(Vector3f& cntrl_up, float cntrl_throttle, float cnt
    // filtered_acc.z = filt_z.apply(acc.z);
 
     //turn off the filtering
-    filtered_acc.x = acc.x;
-    filtered_acc.y = acc.y;
-    filtered_acc.z = acc.z;
+  filtered_acc.x = acc.x;
+  filtered_acc.y = acc.y;
+  filtered_acc.z = acc.z;
 
 
     //normalize (length = 1)
@@ -176,8 +179,8 @@ void Flight_Control::execute(Vector3f& cntrl_up, float cntrl_throttle, float cnt
     m_yaw->servo_out = yaw_pulse;
 
     motors->output();
-}
+  }
 
-void Flight_Control::debug(int d){
+  void Flight_Control::debug(int d){
 
-}
+  }

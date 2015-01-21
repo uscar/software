@@ -20,25 +20,36 @@
 //Algorithm tools
 #include <LowPassFilter2p.h>
 #include <AC_PID.h>
+#include <AP_Baro.h>
 
 //Custom tools
 #include "calibration.h"
 #include "flight_control.h"
-#include "takeoff.h"
+#include "flight_logic.h"
+#include "routine.h"
 
 const AP_HAL::HAL& hal = AP_HAL_AVR_APM2;
-
 AP_InertialSensor_MPU6000 ins;
+AP_Baro_MS5611 baro(&AP_Baro_MS5611::spi);
 
 Flight_Control* flight_control;
+Flight_Logic* flight_logic;
 
 void setup() {
   flight_control = new Flight_Control();
-  flight_control->arm(true);
+  flight_logic = new Flight_Logic(flight_control);
 }
 
 void loop() {
+  flight_logic->ExecuteCurrRoutine();
+}
 
+void set_armed(bool armed) {
+  flight_control->arm(armed);
+}
+
+void set_curr_routine(int routine_code) {
+  flight_logic->set_curr_routine(routine_code);
 }
 
 AP_HAL_MAIN();
