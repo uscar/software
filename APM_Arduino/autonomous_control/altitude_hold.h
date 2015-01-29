@@ -10,9 +10,6 @@ public:
                : Routine(flight_control, routine_code, "ALT_HOLD") { }
   ~Altitude_Hold() { }
   bool ExecuteCycle();
-
-private:
-  float curr_height_;
 };
 
 #endif

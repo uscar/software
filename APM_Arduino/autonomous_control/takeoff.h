@@ -18,7 +18,7 @@ public:
   
   Vector3f& up_cntrl() { return up_cntrl_; }
 private:
-  static const float END_HEIGHT = 1.0; 
+  static constexpr float END_HEIGHT = 1.0; 
   Vector3f up_cntrl_;
 };
 
