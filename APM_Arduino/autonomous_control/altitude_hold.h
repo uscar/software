@@ -7,12 +7,10 @@
 class Altitude_Hold : public Routine {
 public:
   Altitude_Hold(Flight_Control* flight_control, int routine_code)
-               : Routine(flight_control, routine_code) { }
+               : Routine(flight_control, routine_code, "ALT_HOLD") { }
   ~Altitude_Hold() { }
   bool ExecuteCycle();
 
-  float curr_height() { return curr_height_; }
-  void set_curr_height(float curr_height) { curr_height_ = curr_height; }
 private:
   float curr_height_;
 };

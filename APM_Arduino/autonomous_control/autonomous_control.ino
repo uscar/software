@@ -36,11 +36,21 @@ Flight_Control* flight_control;
 Flight_Logic* flight_logic;
 
 void setup() {
+  /** Baro initialization **/
+  hal.gpio->pinMode(63, GPIO_OUTPUT);
+  hal.gpio->write(63, 1);
+  baro.init();
+  baro.calibrate();
+
   flight_control = new Flight_Control();
   flight_logic = new Flight_Logic(flight_control);
 }
 
 void loop() {
+  if(hal.console->available()) {
+    int val = hal.console->read() - '0';
+    if(val != -35) set_curr_routine(val);
+  }
   flight_logic->ExecuteCurrRoutine();
 }
 

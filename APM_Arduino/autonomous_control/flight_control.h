@@ -27,8 +27,6 @@
 #include <PID.h> //pid controller
 #include <AC_PID.h>
 
-#include <RangeFinder.h>
-
 #include "constants.h"
 
 extern const AP_HAL::HAL& hal;

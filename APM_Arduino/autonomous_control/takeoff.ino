@@ -1,7 +1,7 @@
 #include "takeoff.h"
 
 bool Takeoff::ExecuteCycle() {
-  set_curr_height(baro.get_altitude());
+  update_curr_height();
   if(curr_height() < END_HEIGHT) {
     flight_control()->execute(up_cntrl(), CalculateThrust(), 0);
     return false;
