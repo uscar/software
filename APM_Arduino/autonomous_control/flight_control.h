@@ -61,18 +61,7 @@ class Flight_Control {
 public:
   Flight_Control();
   
-  ~Flight_Control() {
-    delete m_roll;
-    delete m_pitch;
-    delete m_throttle;
-    delete m_yaw;
-    delete motors;
-    delete pid_roll;
-    delete pid_pitch;
-    delete pid_throttle;
-    delete pid_yaw;
-  }
-  void arm(bool armed);
+  ~Flight_Control() { }
   void execute(Vector3f& cntrl_up, float cntrl_throttle, float cntrl_yaw = 0);
 
   void setRollPID(kPID& rPid) { setACPid(pid_roll, rPid); }
@@ -84,30 +73,30 @@ public:
   void setYawPID(kPID& yPid) { setACPid(pid_yaw, yPid); }
   kPID& getYawPID() { return yPid; }
 
-  void setGyrFactor(float f);
-  float getGyrFactor();
-
-  void debug(int d);
-  const bool is_armed() const { return armed; }
+  void set_gyr_err_scale(float scale) { gyr_err_scale_ = scale; }
+  float gyr_err_scale() const { return gyr_err_scale_; };
+  
+  void set_armed(bool armed);
+  bool is_armed() const { return armed; }
 
 private:
-  void setACPid(AC_PID* ac_pid, kPID& pid) {
-    ac_pid->kP(pid.P); 
-    ac_pid->kI(pid.I); 
-    ac_pid->kD(pid.D); 
+  void setACPid(AC_PID& ac_pid, kPID& pid) {
+    ac_pid.kP(pid.P); 
+    ac_pid.kI(pid.I); 
+    ac_pid.kD(pid.D); 
   }
   
   bool armed;
-  RC_Channel *m_roll, *m_pitch, *m_throttle, *m_yaw;
-  AP_MotorsQuad* motors;
+  RC_Channel m_roll, m_pitch, m_throttle, m_yaw;
+  AP_MotorsQuad motors;
   
-  kPID rPid, pPid, yPid, tPid; 
-  AC_PID *pid_roll, *pid_pitch, *pid_throttle, *pid_yaw;
-  
-  float gyrErrScale;
-  int timestamp;
+  kPID rPid, pPid, tPid, yPid; 
+  AC_PID pid_roll, pid_pitch, pid_throttle, pid_yaw;
   
   Vector3f acc_offset;
+
+  float gyr_err_scale_;
+  int timestamp;
 };
 
 #endif

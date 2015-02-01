@@ -55,7 +55,7 @@ void loop() {
 }
 
 void set_armed(bool armed) {
-  flight_control->arm(armed);
+  flight_control->set_armed(armed);
 }
 
 void set_curr_routine(int routine_code) {
