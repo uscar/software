@@ -14,8 +14,6 @@ public:
 
   int CalculateThrust();
  
-  // char* get_name() const { return "TAKEOFF"; }
-  
   Vector3f& up_cntrl() { return up_cntrl_; }
 private:
   static constexpr float END_HEIGHT = 1.0; 

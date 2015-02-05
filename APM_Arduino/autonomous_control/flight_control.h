@@ -95,6 +95,7 @@ private:
   
   Vector3f acc_offset;
 
+  float curr_height();
   float gyr_err_scale_;
   int timestamp;
 };

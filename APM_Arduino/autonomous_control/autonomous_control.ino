@@ -13,7 +13,7 @@
 #include <AP_Notify.h>
 
 //Motor output dependencies
-#include <RC_Channel.h> 
+#include <RC_Channel.h>
 #include <AP_Motors.h>
 #include <AP_Curve.h>
 
@@ -32,8 +32,8 @@ const AP_HAL::HAL& hal = AP_HAL_AVR_APM2;
 AP_InertialSensor_MPU6000 ins;
 AP_Baro_MS5611 baro(&AP_Baro_MS5611::spi);
 
-Flight_Control* flight_control;
-Flight_Logic* flight_logic;
+Flight_Control flight_control;
+Flight_Logic flight_logic(&flight_control);
 
 void setup() {
   /** Baro initialization **/
@@ -41,9 +41,6 @@ void setup() {
   hal.gpio->write(63, 1);
   baro.init();
   baro.calibrate();
-
-  flight_control = new Flight_Control();
-  flight_logic = new Flight_Logic(flight_control);
 }
 
 void loop() {
@@ -51,15 +48,15 @@ void loop() {
     int val = hal.console->read() - '0';
     if(val != -35) set_curr_routine(val);
   }
-  flight_logic->ExecuteCurrRoutine();
+  flight_logic.ExecuteCurrRoutine();
 }
 
 void set_armed(bool armed) {
-  flight_control->set_armed(armed);
+  flight_control.set_armed(armed);
 }
 
 void set_curr_routine(int routine_code) {
-  flight_logic->set_curr_routine(routine_code);
+  flight_logic.set_curr_routine(routine_code);
 }
 
 AP_HAL_MAIN();
