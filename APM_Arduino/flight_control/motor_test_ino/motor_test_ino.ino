@@ -18,8 +18,8 @@ RC_Channel pitch(2), roll(3), throttle(1), yaw(4);
 
 AP_MotorsQuad   motors(&pitch, &roll, &throttle, &yaw);
 bool armed = false;
-int PULSE_CHANGE = 1;
-int motor_pulse = 0;
+int PULSE_CHANGE = 10;
+int motor_pulse = 1200;
 
 void print_motor_output(void) {
  int8_t i;
@@ -33,20 +33,20 @@ void print_motor_output(void) {
 
 void setup() {
   hal.console->println("Motor Test");
-  pitch.radio_min = roll.radio_min = throttle.radio_min = yaw.radio_min = 1000;
-  pitch.radio_max = roll.radio_max = throttle.radio_max = yaw.radio_max = 2000;
+//  pitch.radio_min = roll.radio_min = throttle.radio_min = yaw.radio_min = 1000;
+//  pitch.radio_max = roll.radio_max = throttle.radio_max = yaw.radio_max = 2000;
   pitch.set_range(1000,2000);
   roll.set_range(1000,2000);
-  throttle.set_range(1000,2000);
+  throttle.set_range(0,2000);
   yaw.set_range(1000,2000);
-
+  
   throttle.servo_out = 1;
   throttle.set_type(RC_CHANNEL_TYPE_ANGLE_RAW);
   // motor initialisation
   motors.set_update_rate(490);
-  motors.set_frame_orientation(AP_MOTORS_X_FRAME);
-//    motors.set_min_throttle(1000);
-//    motors.set_mid_throttle(1500);
+  motors.set_frame_orientation(AP_MOTORS_H_FRAME);
+//  motors.set_min_throttle(1000);
+//  motors.set_mid_throttle(1500);
 
 
   hal.console->printf("setup : %i\n",(int)motors.setup_throttle_curve());
@@ -72,6 +72,7 @@ void loop() {
     if(val == 's' || val == 'S') {
       armed = !armed;
       motors.armed(armed);
+      motors.output_min();
     }
     else if(val == 'u') {
       motor_pulse += PULSE_CHANGE;
@@ -81,21 +82,18 @@ void loop() {
     }
     else if(val == 'q') {
       motors.armed(false);
+      motors.output_min();
       motor_pulse = 0;
-      pitch.servo_out = motor_pulse;
-      roll.servo_out = motor_pulse;
-      throttle.servo_out = motor_pulse;
-      yaw.servo_out = motor_pulse;
       exit(1); 
     }
   }
+  pitch.pwm_out = 1000;
+  roll.pwm_out = 1000;
+  throttle.pwm_out = motor_pulse;
+  yaw.pwm_out = 1000;
   if(armed) {
     motors.output();
   }
-  pitch.servo_out = motor_pulse;
-  roll.servo_out = motor_pulse;
-  throttle.servo_out = motor_pulse;
-  yaw.servo_out = motor_pulse;
   hal.console->printf("armed: %d\n", armed);
   hal.console->printf("motor_pulse: %d\n", motor_pulse);
   print_motor_output();

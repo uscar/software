@@ -58,7 +58,7 @@ void setup()
     rc3.set_type(RC_CHANNEL_TYPE_ANGLE_RAW);
     // motor initialisation
     motors.set_update_rate(490);
-    motors.set_frame_orientation(AP_MOTORS_X_FRAME);
+    motors.set_frame_orientation(AP_MOTORS_H_FRAME);
 //    motors.set_min_throttle(1000);
 //    motors.set_mid_throttle(1500);
 
@@ -86,7 +86,7 @@ void loop()
 
     // display help
     hal.console->println("\nPress 't' to test motors.  Be careful they will spin! \nPress 'n' to test nam\nPress 'b' to do something\nPress 'q' to quit");
-
+    
     // wait for user to enter something
     while( !hal.console->available() ) {
         hal.scheduler->delay(20);

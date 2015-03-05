@@ -49,8 +49,7 @@ void setup() {
 
 void loop() {
   if(hal.console->available()) {
-    int val = hal.console->read() - '0';
-    set_curr_routine(val);
+    set_curr_routine(hal.console->read() - '0');
   }
   flight_logic->ExecuteCurrRoutine();
 }
