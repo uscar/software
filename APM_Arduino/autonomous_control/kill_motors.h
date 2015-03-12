@@ -10,14 +10,14 @@ public:
   ~Kill_Motors() { }
 
   bool ExecuteCycle() {
-    if(flight_control()->is_armed()) {
+    if(flight_control()->armed()) {
       flight_control()->set_armed(false);
       flight_control()->execute(cntrl_up(), 0, 0);
       return false;
     }
     return false;
   }
-   
+
   Vector3f& cntrl_up() { return cntrl_up_; }
 private:
   Vector3f cntrl_up_;

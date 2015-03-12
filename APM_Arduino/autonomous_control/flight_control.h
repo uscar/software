@@ -12,6 +12,7 @@
 #include <AP_HAL.h>
 #include <AP_HAL_AVR.h>
 
+#include <AP_Baro.h>
 #include <AP_InertialSensor.h>
 #include <GCS_MAVLink.h>
 
@@ -24,13 +25,14 @@
 
 #include <AP_Notify.h>
 
-#include <PID.h> //pid controller
 #include <AC_PID.h>
 
+#include "calibration.h"
 #include "constants.h"
 
 extern const AP_HAL::HAL& hal;
 extern AP_InertialSensor_MPU6000 ins;
+extern AP_Baro_MS5611 baro;
 
 struct kPID {
   float P;
@@ -60,7 +62,7 @@ struct kPID {
 class Flight_Control {
 public:
   Flight_Control();
-  
+
   ~Flight_Control() { }
   void execute(Vector3f& cntrl_up, float cntrl_throttle, float cntrl_yaw = 0);
 
@@ -75,27 +77,27 @@ public:
 
   void set_gyr_err_scale(float scale) { gyr_err_scale_ = scale; }
   float gyr_err_scale() const { return gyr_err_scale_; };
-  
-  void set_armed(bool armed);
-  bool is_armed() const { return armed; }
 
+  void set_armed(bool armed);
+  bool armed() const { return armed_; }
+
+  void PrintMotorOutputs();
 private:
   void setACPid(AC_PID& ac_pid, kPID& pid) {
-    ac_pid.kP(pid.P); 
-    ac_pid.kI(pid.I); 
-    ac_pid.kD(pid.D); 
+    ac_pid.kP(pid.P);
+    ac_pid.kI(pid.I);
+    ac_pid.kD(pid.D);
   }
-  
-  bool armed;
+
   RC_Channel m_roll, m_pitch, m_throttle, m_yaw;
   AP_MotorsQuad motors;
-  
-  kPID rPid, pPid, tPid, yPid; 
+  kPID rPid, pPid, tPid, yPid;
   AC_PID pid_roll, pid_pitch, pid_throttle, pid_yaw;
-  
+
   Vector3f acc_offset;
 
-  float curr_height();
+  int cnt;
+  bool armed_;
   float gyr_err_scale_;
   int timestamp;
 };

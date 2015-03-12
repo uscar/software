@@ -1,3 +1,5 @@
+#ifndef CALIBRATION_H_
+#define CALIBRATION_H_
 ///////////////////////////
 //for the uncovered board//
 ///////////////////////////
@@ -19,7 +21,7 @@
 #define INV_PITCH true
 
 //debugging setup
-#define DEBUG_ALL false
+#define DEBUG_ALL true
 #define DEBUG_FILTER false
 #define DEBUG_PID true
 #define DEBUG_ACTUAL true
@@ -58,3 +60,5 @@
 
 //the z componenet of the to-be normalized control vector (a large value dampens controller effect)
 #define CNTRL_Z_COMP 3
+
+#endif

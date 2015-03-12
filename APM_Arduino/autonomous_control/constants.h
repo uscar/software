@@ -1,3 +1,6 @@
+#ifndef CONSTANTS_H_
+#define CONSTANTS_H_
+
 #define R_P           0.125
 #define R_I           0.00
 #define R_D           0.008
@@ -18,6 +21,11 @@
 #define Y_D           0.000
 #define Y_IMAX        8
 
+#define ALT_HOLD_H_P  3.00
+#define ALT_HOLD_H_I  0.05
+#define ALT_HOLD_H_D  0.01
+#define ALT_HOLD_H_IMAX  5
+
 #define ACC_OFFSET_X  -.18
 #define ACC_OFFSET_Y  .66
 #define ACC_OFFSET_Z  1.1
@@ -26,3 +34,5 @@
 #define CNTRL_RANGE   1000
 
 #define YAW_SCALE     100
+
+#endif

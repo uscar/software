@@ -15,7 +15,7 @@ public:
 	bool ExecuteCycle();
 
 	int CalculateThrust();
-		
+
 	Vector3f& up_cntrl() { return up_cntrl_; }
 private:
 	static constexpr float END_HEIGHT = 0.05;

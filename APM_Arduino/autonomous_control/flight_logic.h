@@ -30,7 +30,7 @@ public:
   ~Flight_Logic() {
     for(int i = 0; i < kROUTINES_SIZE; ++i) {
       delete routine_list[i];
-    } 
+    }
     delete [] routine_list;
   }
 
@@ -40,7 +40,7 @@ public:
 
   Flight_Control* flight_control() const { return flight_control_; }
   Routine* curr_routine() const { return curr_routine_; }
-  const char* get_curr_routine_name() const { return curr_routine()->name(); }
+  const char* curr_routine_name() const { return curr_routine()->name(); }
 private:
   Flight_Control* flight_control_;
   Routine* curr_routine_;

@@ -21,7 +21,6 @@
 
 #include <AP_Notify.h>
 
-#include <PID.h> //pid controller
 #include <AC_PID.h>
 
 #include "flight_control.h"
@@ -32,7 +31,7 @@ Flight_Control::Flight_Control() :
                         rPid(R_P, R_I, R_D, R_IMAX), pPid(P_P, P_I, P_D, P_IMAX),
                         tPid(T_P, T_I, T_D, T_IMAX), yPid(Y_P, Y_I, Y_D, Y_IMAX),
                         acc_offset(ACC_OFFSET_X, ACC_OFFSET_Y, ACC_OFFSET_Z),
-                        gyr_err_scale_(150) {
+                        armed_(false), gyr_err_scale_(150) {
   ins.init(AP_InertialSensor::COLD_START, AP_InertialSensor::RATE_100HZ);
 
 // HAL will start serial port at 115200.
@@ -58,14 +57,11 @@ Flight_Control::Flight_Control() :
 
   //setup timing
   timestamp = hal.scheduler->micros();
-
-  //kill the barometer
-  hal.gpio->pinMode(40, GPIO_OUTPUT);
-  hal.gpio->write(40,1);
+  cnt = 0;
 }
 
 void Flight_Control::set_armed(bool armed){
-  this->armed = armed;
+  this->armed_ = armed;
   motors.armed(armed);
 }
 
@@ -86,7 +82,7 @@ void Flight_Control::set_armed(bool armed){
 
 //Execute a single command, given an up vector, throttle value, and current yaw
 void Flight_Control::execute(Vector3f& cntrl_up, float cntrl_throttle, float cntrl_yaw){
-  if(!is_armed()) {
+  if(!armed()) {
     motors.output_min();
     return;
   }
@@ -108,7 +104,7 @@ void Flight_Control::execute(Vector3f& cntrl_up, float cntrl_throttle, float cnt
   Vector3f gyr = ins.get_gyro();
   Vector3f filtered_acc;
 
-    //apply a low pass filter    
+    //apply a low pass filter
    // filtered_acc.x = filt_x.apply(acc.x);
    // filtered_acc.y = filt_y.apply(acc.y);
    // filtered_acc.z = filt_z.apply(acc.z);
@@ -164,6 +160,19 @@ void Flight_Control::execute(Vector3f& cntrl_up, float cntrl_throttle, float cnt
   m_pitch.servo_out = pitch_pulse;
   m_throttle.servo_out = throttle_pulse;
   m_yaw.servo_out = yaw_pulse;
-
+  if(DEBUG_MOTOR && !(cnt % 50)) {
+    PrintMotorOutputs();
+  }
   motors.output();
+  cnt++;
+}
+
+void Flight_Control::PrintMotorOutputs() {
+  int8_t i;
+  for(i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
+    if( motors.motor_enabled[i] ) {
+      hal.console->printf("\t%d %d",i,motors.motor_out[i]);
+    }
+  }
+  hal.console->println();
 }

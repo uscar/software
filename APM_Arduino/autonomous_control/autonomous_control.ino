@@ -49,7 +49,14 @@ void setup() {
 
 void loop() {
   if(hal.console->available()) {
-    set_curr_routine(hal.console->read() - '0');
+    char in = hal.console->read();
+    if(in == 's') {
+      flight_control->set_armed(!flight_control->armed());
+    }
+    else {
+      set_curr_routine(in - '0');
+      flight_logic->curr_routine()->set_timestamp(hal.scheduler->micros());
+    }
   }
   flight_logic->ExecuteCurrRoutine();
 }

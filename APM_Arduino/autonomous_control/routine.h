@@ -2,10 +2,13 @@
 #define ROUTINE_H_
 
 #include <AP_Baro.h>
+
+#include "calibration.h"
+#include "constants.h"
 #include "flight_control.h"
 
 extern const AP_HAL::HAL& hal;
-extern AP_Baro_MS5611 baro; 
+extern AP_Baro_MS5611 baro;
 
 class Routine {
 public:
@@ -16,11 +19,12 @@ public:
   virtual ~Routine() {
     delete name_;
   }
-  
 
-  /** Returns true if finished with execution 
+
+  /** Returns true if finished with execution
     * (i.e should set to default routine), false otherwise **/
   virtual bool ExecuteCycle() = 0;
+
 
   /** Executes cycles until it returns true. Not recommended b/c uninterruptable **/
   bool ExecuteFull() {
@@ -37,11 +41,15 @@ public:
 
   float curr_height() { return curr_height_; }
 
+  int timestamp() { return timestamp_; }
+  void set_timestamp(int timestamp) { timestamp_ = timestamp; }
+
   Flight_Control* flight_control() const { return flight_control_; }
   const char* name() const { return name_; };
   const int routine_code() const { return routine_code_; }
 protected:
   float curr_height_;
+  int timestamp_;
   Flight_Control* flight_control_;
   const int routine_code_;
   const char* name_;
