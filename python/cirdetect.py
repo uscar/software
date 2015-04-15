@@ -35,6 +35,7 @@ while(True):
       view[:h2, w1:, 1] = frame[:, :, 1]
       view[:h1, :w1, 2] = original[:, :, 2]
       view[:h2, w1:, 2] = frame[:, :, 2]
+
       if circles != None:
           circles = np.uint16(np.around(circles))
           temp = frame
@@ -66,14 +67,13 @@ while(True):
                   veryGood = np.append(veryGood,m)
             matches = []
 
-
-
             for m in veryGood:
                 color = tuple([sp.random.randint(0,255) for _ in xrange(3)])
                 cv2.line(view, (int(kp1[m.queryIdx].pt[0]), int(kp1[m.queryIdx].pt[1])),(int(kp2[m.trainIdx].pt[0]+w1), int(kp2[m.trainIdx].pt[1])),color)
                 cv2.circle(view,(int(kp1[m.queryIdx].pt[0]),int(kp1[m.queryIdx].pt[1])),10,255,-1)
                 cv2.circle(view,(int(kp2[m.trainIdx].pt[0]+w1), int(kp2[m.trainIdx].pt[1])),10,255,-1)
-      cv2.imshow('test',view)
+                cv2.imshow('test',view)
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
           break
 # When everything done, release the capture
