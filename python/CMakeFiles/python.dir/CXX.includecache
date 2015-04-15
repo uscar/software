@@ -31,6 +31,8 @@ opencv2/highgui/highgui.hpp
 /Users/darvishkamalia/Desktop/USCAR/software/python/opencv2/highgui/highgui.hpp
 opencv2/nonfree/features2d.hpp
 /Users/darvishkamalia/Desktop/USCAR/software/python/opencv2/nonfree/features2d.hpp
+opencv2/imgproc/imgproc.hpp
+/Users/darvishkamalia/Desktop/USCAR/software/python/opencv2/imgproc/imgproc.hpp
 
 /usr/local/include/opencv/cv.h
 opencv2/core/core_c.h
