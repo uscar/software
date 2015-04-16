@@ -1,0 +1,6 @@
+CMakeCache.txt
+python
+Makefile
+CMakeFiles/**
+CMakeFiles
+cmake_install.cmake
