@@ -50,6 +50,10 @@ void setup() {
 void loop() {
   if(hal.console->available()) {
     char in = hal.console->read();
+    if(in == 'q') {
+      flight_control->set_armed(false);
+      exit(1);
+    }
     if(in == 's') {
       flight_control->set_armed(!flight_control->armed());
     }
@@ -59,10 +63,6 @@ void loop() {
     }
   }
   flight_logic->ExecuteCurrRoutine();
-}
-
-void set_armed(bool armed) {
-  flight_control->set_armed(armed);
 }
 
 void set_curr_routine(int routine_code) {

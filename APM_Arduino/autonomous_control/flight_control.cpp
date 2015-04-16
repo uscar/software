@@ -49,10 +49,23 @@ Flight_Control::Flight_Control() :
   setThrottlePID(tPid);
   setYawPID(yPid);
 
+  m_roll.set_range(0, 1000);
+  m_pitch.set_range(0, 1000);
+  m_throttle.set_range(0, 1000);
+  m_yaw.set_range(0, 1000);
+  // m_throttle.set_type(RC_CHANNEL_TYPE_ANGLE_RAW);
+  m_throttle.radio_min = 0;
+  m_throttle.radio_max = 2000;
+
   //setup motors
   motors.Init();
   motors.set_update_rate(500);
+  
+  motors.set_min_throttle(100);
+  motors.setup_throttle_curve();
+  
   motors.enable();
+
   set_armed(false);
 
   //setup timing
@@ -133,12 +146,12 @@ void Flight_Control::execute(Vector3f& cntrl_up, float cntrl_throttle, float cnt
   int int_cntrl_yaw       = cntrl_yaw * CNTRL_RANGE;
   int int_cntrl_throttle  = cntrl_throttle;
 
-  int roll_error     =  err.y*CNTRL_RANGE;
-  int pitch_error    =  err.x*CNTRL_RANGE;
+  int roll_error     =  err.y * CNTRL_RANGE;
+  int pitch_error    =  err.x * CNTRL_RANGE;
   int throttle_error =  cntrl_throttle - throttle_actual;
   int yaw_error      =  int_cntrl_yaw - yaw_actual;
-  int pitch_pid_err  =  pid_pitch.get_pid(pitch_error,dt);
-  int roll_pid_err   =  pid_roll.get_pid(roll_error,dt);
+  int pitch_pid_err  =  pid_pitch.get_pid(pitch_error, dt);
+  int roll_pid_err   =  pid_roll.get_pid(roll_error, dt);
 
   int r_correction = error_scale * (roll_pid_err - int(gyr_err.x));
   int p_correction = error_scale * (pitch_pid_err + int(gyr_err.y));
@@ -164,14 +177,13 @@ void Flight_Control::execute(Vector3f& cntrl_up, float cntrl_throttle, float cnt
     PrintMotorOutputs();
   }
   motors.output();
-  cnt++;
+  ++cnt;
 }
 
 void Flight_Control::PrintMotorOutputs() {
-  int8_t i;
-  for(i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
-    if( motors.motor_enabled[i] ) {
-      hal.console->printf("\t%d %d",i,motors.motor_out[i]);
+  for(int8_t i = 0; i < AP_MOTORS_MAX_NUM_MOTORS; i++) {
+    if(motors.motor_enabled[i]) {
+      hal.console->printf("\t%d %d", i, motors.motor_out[i]);
     }
   }
   hal.console->println();

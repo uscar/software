@@ -21,11 +21,6 @@
 #define Y_D           0.000
 #define Y_IMAX        8
 
-#define ALT_HOLD_H_P  3.00
-#define ALT_HOLD_H_I  0.05
-#define ALT_HOLD_H_D  0.01
-#define ALT_HOLD_H_IMAX  5
-
 #define ACC_OFFSET_X  -.18
 #define ACC_OFFSET_Y  .66
 #define ACC_OFFSET_Z  1.1

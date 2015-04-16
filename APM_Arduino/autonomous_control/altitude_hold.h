@@ -13,7 +13,7 @@ public:
                  height_pid(ALT_HOLD_H_P, ALT_HOLD_H_I,
                             ALT_HOLD_H_D, ALT_HOLD_H_IMAX),
 								 up_cntrl_(0, 0, 1),
-                 hover_throttle_(MOTOR_HOVER), target_height_(1) { }
+                 hover_throttle_(THROTTLE_MID), target_height_(1) { }
   ~Altitude_Hold() { }
   bool ExecuteCycle();
 
@@ -26,7 +26,12 @@ public:
 	void set_target_height(float target_height) { target_height_ = target_height; }
 
 private:
-  static const float THROTTLE_SCALE = 10.0;
+  static const float THROTTLE_CORRECTION_SCALE = 0.05;
+  static const float ALT_HOLD_H_P = 8.00;
+  static const float ALT_HOLD_H_I = 0.00;
+  static const float ALT_HOLD_H_D = 8.00;
+  static const float ALT_HOLD_H_IMAX = 5;
+
   AC_PID height_pid;
 	Vector3f up_cntrl_;
 	float hover_throttle_;

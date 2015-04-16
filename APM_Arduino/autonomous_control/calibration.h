@@ -42,8 +42,9 @@
 #define M_SERV_MIN 0
 #define M_SERV_MAX 1000
 
-#define THROTTLE_SIG_MAX 1000
-#define THROTTLE_SIG_MIN 0
+#define THROTTLE_MAX 1000
+#define THROTTLE_MID 800
+#define THROTTLE_MIN 600
 
 #define DIR_SIG_MIN -1000
 #define DIR_SIG_MAX 1000
@@ -58,7 +59,7 @@
 #define RPY_RC_MAX 1900
 #define RPY_RC_TRIM 1500
 
-//the z componenet of the to-be normalized control vector (a large value dampens controller effect)
+//the z component of the to-be normalized control vector (a large value dampens controller effect)
 #define CNTRL_Z_COMP 3
 
 #endif

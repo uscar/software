@@ -15,11 +15,10 @@ public:
   Routine(Flight_Control* flight_control, const int routine_code, const char* name) :
                           flight_control_(flight_control),
                           routine_code_(routine_code),
-                          name_(name) { }
+                          name_(name), count(0) { }
   virtual ~Routine() {
     delete name_;
   }
-
 
   /** Returns true if finished with execution
     * (i.e should set to default routine), false otherwise **/
@@ -53,6 +52,8 @@ protected:
   Flight_Control* flight_control_;
   const int routine_code_;
   const char* name_;
+  int count; // Used for periodic debugging.
+  static const bool DEBUG = true; // Enable debugging function call
 };
 
 #endif

@@ -12,9 +12,8 @@ public:
   bool ExecuteCycle() {
     if(flight_control()->armed()) {
       flight_control()->set_armed(false);
-      flight_control()->execute(cntrl_up(), 0, 0);
-      return false;
     }
+    flight_control()->execute(cntrl_up(), 0, 0);
     return false;
   }
 
